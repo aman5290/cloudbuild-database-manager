@@ -1,8 +1,50 @@
+/* =============================================================
+   Project : Pagila PostgreSQL Web Portal
+
+   Version : 4.0.0
+
+   File    : style.css
+
+   Author  : Aman
+
+   Purpose
+   -------
+   Contains the global stylesheet for the application.
+
+   Responsibilities
+   ----------------
+   1. Define the overall page layout.
+   2. Style forms, buttons and tables.
+   3. Display success and error messages.
+   4. Provide reusable utility classes.
+
+   Future Scope
+   ------------
+   - Responsive design
+   - Dark mode
+   - Theme support
+   - Navigation bar styling
+
+   Last Updated
+   ------------
+   04-Aug-2026
+============================================================= */
+
+
+/* -----------------------------------------------------------
+   Page Layout
+----------------------------------------------------------- */
+
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f5f5f5;
     margin: 40px;
 }
+
+
+/* -----------------------------------------------------------
+   Main Content Container
+----------------------------------------------------------- */
 
 .container {
     background: white;
@@ -10,12 +52,22 @@ body {
     margin: auto;
     padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
 }
+
+
+/* -----------------------------------------------------------
+   Page Heading
+----------------------------------------------------------- */
 
 h1 {
     color: #2c3e50;
 }
+
+
+/* -----------------------------------------------------------
+   Table Styling
+----------------------------------------------------------- */
 
 table {
     width: 100%;
@@ -40,20 +92,61 @@ td {
     text-align: left;
 }
 
+
+/* -----------------------------------------------------------
+   Form Controls
+----------------------------------------------------------- */
+
 input {
     padding: 8px;
     width: 120px;
 }
+
+
+/* -----------------------------------------------------------
+   Buttons
+----------------------------------------------------------- */
 
 button {
     padding: 8px 15px;
     cursor: pointer;
 }
 
+
+/* -----------------------------------------------------------
+   Hyperlinks
+----------------------------------------------------------- */
+
 a {
     text-decoration: none;
+}
 
 
+/* -----------------------------------------------------------
+   Success Message
+   Used after successful actions like logout.
+----------------------------------------------------------- */
+
+.success-message {
+
+    width: 60%;
+    margin: 20px auto;
+    padding: 12px;
+
+    background: #d4edda;
+    color: #155724;
+
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+
+    text-align: center;
+
+}
+
+
+/* -----------------------------------------------------------
+   Generic Success Box
+----------------------------------------------------------- */
 
 .success {
     color: #155724;
@@ -63,6 +156,11 @@ a {
     margin-top: 20px;
 }
 
+
+/* -----------------------------------------------------------
+   Error Message
+----------------------------------------------------------- */
+
 .error {
     color: #721c24;
     background-color: #f8d7da;
@@ -70,6 +168,12 @@ a {
     border-radius: 5px;
     margin-top: 20px;
 }
+
+
+/* -----------------------------------------------------------
+   Utility Class
+   Center align text.
+----------------------------------------------------------- */
 
 .center {
     text-align: center;

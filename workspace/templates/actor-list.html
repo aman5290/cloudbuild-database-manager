@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+<!--
+=============================================================
+Project : Pagila PostgreSQL Web Portal
+
+Version : 5.0.0
+
+File    : actor-list.html
+
+Author  : Aman
+
+Purpose
+-------
+Display database results dynamically.
+
+Responsibilities
+----------------
+1. Display column names returned by PostgreSQL
+2. Display all rows returned by PostgreSQL
+3. Work with any table having any number of columns
+
+Future Scope
+------------
+- Pagination
+- Sorting
+- Filtering
+- Export to CSV/Excel
+- SQL Query Results
+
+Last Updated
+------------
+04-Aug-2026
+=============================================================
+-->
+
+{% block title %}
+Actor List
+{% endblock %}
+
+{% block content %}
+
+<h2 class="center">
+    Actor List
+</h2>
+
+<p class="center">
+    Total Records :
+    <strong>{{ rows|length }}</strong>
+</p>
+
+{% if rows %}
+
+<table>
+
+    <thead>
+
+        <tr>
+
+            <!-- Display column names dynamically -->
+
+            {% for column in columns %}
+
+                <th>
+
+                    {{ column.replace('_', ' ').title() }}
+
+                </th>
+
+            {% endfor %}
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        <!-- Display every row -->
+
+        {% for row in rows %}
+
+        <tr>
+
+            <!-- Display every value inside the row -->
+
+            {% for value in row %}
+
+            <td>
+
+                {{ value }}
+
+            </td>
+
+            {% endfor %}
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+
+<div class="error">
+
+    <h2>No Records Found</h2>
+
+    <p>
+
+        PostgreSQL did not return any records.
+
+    </p>
+
+</div>
+
+{% endif %}
+
+<br>
+
+<a href="/">
+    ← Back to Home
+</a>
+
+{% endblock %}

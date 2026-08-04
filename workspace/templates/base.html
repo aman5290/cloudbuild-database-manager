@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<!--
+=============================================================
+Project : Pagila PostgreSQL Web Portal
+
+Version : 4.0.0
+
+File    : base.html
+
+Author  : Aman
+
+Purpose
+-------
+Base layout shared by all web pages.
+
+Responsibilities
+----------------
+1. Common HTML structure
+2. Load CSS
+3. Display page header
+4. Display page footer
+5. Provide a content area for child templates
+
+Future Scope
+------------
+- Navigation Bar
+- User Login Information
+- Breadcrumb Navigation
+- Theme Switch (Dark/Light)
+- Footer Information
+
+Last Updated
+------------
+04-Aug-2026
+=============================================================
+-->
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+
+        {% block title %}
+
+        Pagila PostgreSQL Web Portal
+
+        {% endblock %}
+
+    </title>
+
+    <!-- Common CSS -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ===============================================
+         Project Header
+    ================================================ -->
+
+    <h1 class="center">
+
+        Pagila PostgreSQL Web Portal
+
+    </h1>
+
+    <hr>
+
+    <!-- ===============================================
+         Page Content
+    ================================================ -->
+
+    {% block content %}
+
+    {% endblock %}
+
+    <hr>
+
+    <!-- ===============================================
+         Footer
+    ================================================ -->
+
+    <p class="center">
+
+        Version 4.0.0
+
+    </p>
+
+</div>
+
+</body>
+

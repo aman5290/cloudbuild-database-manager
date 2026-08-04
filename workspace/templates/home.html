@@ -1,43 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <meta charset="UTF-8">
-    <title>Pagila PostgreSQL Web Portal</title>
-</head>
+<!--
+=============================================================
+Project : Pagila PostgreSQL Web Portal
 
-<body>
-    
-    <div class="container">
+Version : 4.0.0
 
-    <h1>Pagila PostgreSQL Web Portal</h1>
+File    : home.html
 
-    <h2 class="center">Search Actor</h2>
-    
-    <p class="center">
+Author  : Aman
 
-        Enter an Actor ID and click <strong>Search</strong>.
+Purpose
+-------
+Application home page.
 
-    </p>
+Responsibilities
+----------------
+1. Search actor by ID
+2. Navigate to Actor List
+3. (Future) Navigation to other modules
 
-    <form action="/actor" method="get">
+Future Scope
+------------
+- Dashboard Cards
+- Login Status
+- Database Status
+- Quick Navigation
 
-        <label for="actor_id">Actor ID</label>
+Last Updated
+------------
+04-Aug-2026
+=============================================================
+-->
 
-        <input
-            type="number"
-            id="actor_id"
-            name="actor_id"
-            required>
+{% block title %}
+Home
+{% endblock %}
 
-        <button type="submit">
-            Search
+{% block content %}
+
+<h2 class="center">
+    Search Actor
+</h2>
+
+<p class="center">
+    Enter an Actor ID and click Search.
+</p>
+
+<form action="/actor" method="get">
+
+    <label for="actor_id">
+        Actor ID
+    </label>
+
+    <br><br>
+
+    <input
+        type="number"
+        id="actor_id"
+        name="actor_id"
+        required>
+
+    <button type="submit">
+        Search
+    </button>
+
+</form>
+
+<hr>
+
+<h2 class="center">
+    Actor Management
+</h2>
+
+<p class="center">
+    View every actor stored in PostgreSQL.
+</p>
+
+<div class="center">
+
+    <a href="/actors">
+
+        <button>
+
+            View All Actors
+
         </button>
 
-    </form>
-    
-    </div>
+    </a>
 
-</body>
+</div>
 
+{% endblock %}
