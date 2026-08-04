@@ -25,6 +25,8 @@ Last Updated
 """
 
 import psycopg
+from psycopg import sql
+
 
 from src.config import DB_CONFIG
 
@@ -194,7 +196,7 @@ def get_table_data(table_name, limit=100):
     =========================================================
     Purpose
     ---------------------------------------------------------
-    Retrieve rows from any database table.
+    Retrieve data from any PostgreSQL table.
 
     Parameters
     ---------------------------------------------------------
@@ -202,41 +204,35 @@ def get_table_data(table_name, limit=100):
         Name of the table.
 
     limit : int
-        Maximum rows to retrieve.
+        Maximum number of rows.
 
     Returns
     ---------------------------------------------------------
     tuple
-        Column names and table rows.
+        (columns, rows)
 
-    Future Scope
-    ---------------------------------------------------------
-    - Pagination
-    - Sorting
-    - Filtering
     =========================================================
     """
-
-    # Allow only valid PostgreSQL identifiers.
-    if not table_name.replace("_", "").isalnum():
-        raise ValueError("Invalid table name.")
 
     with get_connection() as conn:
         with conn.cursor() as cur:
 
-            # Read column names.
-            cur.execute(f"""
+            # Build a safe SQL statement.
+            query = sql.SQL("""
                 SELECT *
-                FROM {table_name}
-                LIMIT {limit};
-            """)
+                FROM {}
+                LIMIT %s;
+            """).format(
+                sql.Identifier(table_name)
+            )
+
+            cur.execute(query, (limit,))
 
             columns = [
-                desc[0]
-                for desc in cur.description
+                column.name
+                for column in cur.description
             ]
 
             rows = cur.fetchall()
 
             return columns, rows
-                        

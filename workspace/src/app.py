@@ -42,7 +42,8 @@ from src.database.db import (
     get_actor_by_id,
     get_all_actors,
     get_user_by_username,
-    get_database_tables
+    get_database_tables,
+    get_table_data
 )
 
 from src.utils.password import verify_password
@@ -364,17 +365,58 @@ def database_explorer():
 
 
 # -----------------------------------------------------------
-# Table Viewer (Temporary)
+# Generic Table Viewer
 # -----------------------------------------------------------
 @app.route("/table/<table_name>")
 def table_view(table_name):
+    """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    Display any PostgreSQL table.
 
+    URL
+    ---------------------------------------------------------
+    /table/<table_name>
+
+    Responsibilities
+    ---------------------------------------------------------
+    1. Validate user session.
+    2. Read table data.
+    3. Render generic HTML table.
+
+    Future Scope
+    ---------------------------------------------------------
+    - Pagination
+    - Search
+    - Sorting
+    - Export
+    =========================================================
+    """
+
+    # -------------------------------------------------------
+    # Ensure the user is authenticated.
+    # -------------------------------------------------------
     if "user_id" not in session:
         return redirect(url_for("login"))
 
+    try:
+
+        columns, rows = get_table_data(table_name)
+
+    except Exception as error:
+
+        return (
+            f"Unable to display table.<br><br>"
+            f"Error : {error}",
+            500
+        )
+
     return render_template(
-        "table-placeholder.html",
-        table_name=table_name
+        "table-view.html",
+        table_name=table_name,
+        columns=columns,
+        rows=rows
     )
     
     

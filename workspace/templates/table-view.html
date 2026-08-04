@@ -6,15 +6,34 @@
 
 {% block content %}
 
-<!-- =======================================================
+<!-- ==========================================================
      Generic Table Viewer
-======================================================== -->
+
+     Purpose
+     -------
+     Display the contents of any PostgreSQL table.
+
+     Future Scope
+     ------------
+     - Pagination
+     - Sorting
+     - Search
+     - Edit
+=========================================================== -->
 
 <h2>
 
 Table : {{ table_name }}
 
 </h2>
+
+<p>
+
+Displaying the first {{ rows|length }} rows.
+
+</p>
+
+<hr>
 
 <table>
 
@@ -24,11 +43,11 @@ Table : {{ table_name }}
 
 {% for column in columns %}
 
-<th>
+    <th>
 
-{{ column }}
+        {{ column }}
 
-</th>
+    </th>
 
 {% endfor %}
 
@@ -42,15 +61,15 @@ Table : {{ table_name }}
 
 <tr>
 
-{% for value in row %}
+    {% for value in row %}
 
-<td>
+    <td>
 
-{{ value }}
+        {{ value }}
 
-</td>
+    </td>
 
-{% endfor %}
+    {% endfor %}
 
 </tr>
 
@@ -59,5 +78,15 @@ Table : {{ table_name }}
 </tbody>
 
 </table>
+
+<p>
+
+<a href="/database-explorer">
+
+← Back to Database Explorer
+
+</a>
+
+</p>
 
 {% endblock %}
