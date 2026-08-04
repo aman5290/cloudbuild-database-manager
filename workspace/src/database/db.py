@@ -236,3 +236,87 @@ def get_table_data(table_name, limit=100):
             rows = cur.fetchall()
 
             return columns, rows
+
+
+
+
+# -----------------------------------------------------------
+# Retrieve Table Information
+# -----------------------------------------------------------
+def get_table_information(table_name):
+    """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    Retrieve metadata for a PostgreSQL table.
+
+    Returns
+    ---------------------------------------------------------
+    Dictionary containing:
+
+    - Row count
+    - Column count
+    - Primary key
+
+    Future Scope
+    ---------------------------------------------------------
+    - Indexes
+    - Foreign Keys
+    - Table Size
+    =========================================================
+    """
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            # ---------------------------------------------
+            # Total Rows
+            # ---------------------------------------------
+            query = sql.SQL("""
+                SELECT COUNT(*)
+                FROM {};
+            """).format(
+                sql.Identifier(table_name)
+            )
+
+            cur.execute(query)
+
+            row_count = cur.fetchone()[0]
+
+            # ---------------------------------------------
+            # Total Columns
+            # ---------------------------------------------
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM information_schema.columns
+                WHERE table_schema='public'
+                AND table_name=%s;
+            """, (table_name,))
+
+            column_count = cur.fetchone()[0]
+
+            # ---------------------------------------------
+            # Primary Key
+            # ---------------------------------------------
+            cur.execute("""
+                SELECT
+                    kcu.column_name
+                FROM information_schema.table_constraints tc
+                JOIN information_schema.key_column_usage kcu
+                  ON tc.constraint_name = kcu.constraint_name
+                 AND tc.table_schema = kcu.table_schema
+                WHERE tc.constraint_type='PRIMARY KEY'
+                  AND tc.table_name=%s
+                  AND tc.table_schema='public';
+            """, (table_name,))
+
+            result = cur.fetchone()
+
+            primary_key = result[0] if result else "N/A"
+
+            return {
+                "row_count": row_count,
+                "column_count": column_count,
+                "primary_key": primary_key
+            }
+                        
