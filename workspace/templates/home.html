@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <title>Pagila PostgreSQL Web Portal</title>
+</head>
+
+<body>
+    
+    <div class="container">
+
+    <h1>Pagila PostgreSQL Web Portal</h1>
+
+    <h2 class="center">Search Actor</h2>
+    
+    <p class="center">
+
+        Enter an Actor ID and click <strong>Search</strong>.
+
+    </p>
+
+    <form action="/actor" method="get">
+
+        <label for="actor_id">Actor ID</label>
+
+        <input
+            type="number"
+            id="actor_id"
+            name="actor_id"
+            required>
+
+        <button type="submit">
+            Search
+        </button>
+
+    </form>
+    
+    </div>
+
+</body>
+
