@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<!--
+=============================================================
+Project : Pagila PostgreSQL Web Portal
+
+Version : 3.0.0
+
+File    : home.html
+
+Author  : Aman
+
+Purpose
+-------
+Home page of the application.
+
+Responsibilities
+----------------
+1. Search one actor
+2. Navigate to Actor List
+3. Future dashboard landing page
+
+Last Updated
+------------
+04-Aug-2026
+=============================================================
+-->
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Pagila PostgreSQL Web Portal</title>
+
+    <!-- Common CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1 class="center">
+        Pagila PostgreSQL Web Portal
+    </h1>
+
+    <hr>
+
+    <h2 class="center">
+        Search Actor
+    </h2>
+
+    <p class="center">
+        Enter an Actor ID to search.
+    </p>
+
+    <form action="/actor" method="get">
+
+        <label for="actor_id">
+
+            Actor ID
+
+        </label>
+
+        <br><br>
+
+        <input
+            type="number"
+            id="actor_id"
+            name="actor_id"
+            required>
+
+        <button type="submit">
+
+            Search
+
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2 class="center">
+
+        Actor Management
+
+    </h2>
+
+    <p class="center">
+
+        View every actor stored in PostgreSQL.
+
+    </p>
+
+    <div class="center">
+
+        <a href="/actors">
+
+            <button>
+
+                View All Actors
+
+            </button>
+
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

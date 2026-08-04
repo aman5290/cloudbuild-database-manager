@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<!--
+=============================================================
+Project : Pagila PostgreSQL Web Portal
+
+Version : 3.0.1
+
+File    : actor-list.html
+
+Author  : Aman
+
+Purpose
+-------
+Display all actor records from the PostgreSQL database.
+
+Responsibilities
+----------------
+1. Display total number of actors
+2. Display actor details in a table
+3. Allow user to return to Home page
+
+Future Scope
+------------
+- Pagination
+- Sorting
+- Search by First Name
+- Search by Last Name
+- Edit/Delete buttons
+
+Last Updated
+------------
+04-Aug-2026
+=============================================================
+-->
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>All Actors</title>
+
+    <!-- Common CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1 class="center">
+        All Actors
+    </h1>
+
+    <!-- Display total number of records -->
+    <p class="center">
+        Total Records :
+        <strong>{{ actors|length }}</strong>
+    </p>
+
+    {% if actors %}
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Actor ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        <!-- Loop through every actor -->
+
+        {% for actor in actors %}
+
+            <tr>
+
+                <td>{{ actor[0] }}</td>
+
+                <td>{{ actor[1] }}</td>
+
+                <td>{{ actor[2] }}</td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    {% else %}
+
+    <div class="error">
+
+        <h2>No Actors Found</h2>
+
+        <p>
+            The actor table is empty.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+    <br>
+
+    <a href="/">
+         Back to Home
+    </a>
+
+</div>
+
+</body>
+
