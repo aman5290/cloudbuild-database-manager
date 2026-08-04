@@ -27,6 +27,43 @@ Table : {{ table_name }}
 
 </h2>
 
+
+<!-- ==========================================================
+     Table Information
+=========================================================== -->
+
+<table>
+
+<tr>
+
+    <th>Rows</th>
+
+    <td>{{ table_info.row_count }}</td>
+
+</tr>
+
+<tr>
+
+    <th>Columns</th>
+
+    <td>{{ table_info.column_count }}</td>
+
+</tr>
+
+<tr>
+
+    <th>Primary Key</th>
+
+    <td>{{ table_info.primary_key }}</td>
+
+</tr>
+
+</table>
+
+<br>
+
+
+
 <p>
 
 Displaying the first {{ rows|length }} rows.
