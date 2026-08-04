@@ -138,3 +138,105 @@ def get_user_by_username(username):
             """, (username,))
 
             return cur.fetchone()
+            
+
+
+
+
+# -----------------------------------------------------------
+# Retrieve Database Tables
+# -----------------------------------------------------------
+def get_database_tables():
+    """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    Retrieve all user tables from the PostgreSQL database.
+
+    Returns
+    ---------------------------------------------------------
+    list
+        A list containing table names.
+
+    Notes
+    ---------------------------------------------------------
+    Only tables from the 'public' schema are returned.
+
+    Future Scope
+    ---------------------------------------------------------
+    - Support multiple schemas
+    - Filter system tables
+    - Include row counts
+    =========================================================
+    """
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                SELECT
+                    table_name
+                FROM information_schema.tables
+                WHERE table_schema = 'public'
+                ORDER BY table_name;
+            """)
+
+            return cur.fetchall()
+
+
+
+
+# -----------------------------------------------------------
+# Retrieve Table Data
+# -----------------------------------------------------------
+def get_table_data(table_name, limit=100):
+    """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    Retrieve rows from any database table.
+
+    Parameters
+    ---------------------------------------------------------
+    table_name : str
+        Name of the table.
+
+    limit : int
+        Maximum rows to retrieve.
+
+    Returns
+    ---------------------------------------------------------
+    tuple
+        Column names and table rows.
+
+    Future Scope
+    ---------------------------------------------------------
+    - Pagination
+    - Sorting
+    - Filtering
+    =========================================================
+    """
+
+    # Allow only valid PostgreSQL identifiers.
+    if not table_name.replace("_", "").isalnum():
+        raise ValueError("Invalid table name.")
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            # Read column names.
+            cur.execute(f"""
+                SELECT *
+                FROM {table_name}
+                LIMIT {limit};
+            """)
+
+            columns = [
+                desc[0]
+                for desc in cur.description
+            ]
+
+            rows = cur.fetchall()
+
+            return columns, rows
+                        

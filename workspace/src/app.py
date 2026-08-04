@@ -41,7 +41,8 @@ from flask import (
 from database.db import (
     get_actor_by_id,
     get_all_actors,
-    get_user_by_username
+    get_user_by_username,
+    get_database_tables
 )
 
 from utils.password import verify_password
@@ -322,6 +323,77 @@ def logout():
         )
     )
 
+
+
+# -----------------------------------------------------------
+# Database Explorer
+# -----------------------------------------------------------
+@app.route("/database-explorer")
+def database_explorer():
+    """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    Display all database tables.
+
+    Responsibilities
+    ---------------------------------------------------------
+    1. Read table names from PostgreSQL.
+    2. Display them in the browser.
+
+    Future Scope
+    ---------------------------------------------------------
+    - Display table icons
+    - Display row counts
+    - Search tables
+    =========================================================
+    """
+
+    # Ensure the user is authenticated.
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    tables = get_database_tables()
+
+    return render_template(
+        "database-explorer.html",
+        tables=tables
+    )
+
+
+
+
+# -----------------------------------------------------------
+# Table Viewer (Temporary)
+# -----------------------------------------------------------
+@app.route("/table/<table_name>")
+def table_view(table_name):
+    """
+    Temporary placeholder.
+
+    This route will become the Generic
+    Table Viewer in the next sprint.
+    """
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return f"""
+    <h2>{table_name}</h2>
+
+    <p>
+        Generic Table Viewer will be implemented
+        in Sprint 5.3.
+    </p>
+
+    <br>
+
+    <a href="/database-explorer">
+        ← Back to Database Explorer
+    </a>
+    """
+    
+    
 
 
 # -----------------------------------------------------------

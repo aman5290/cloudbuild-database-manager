@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ table_name }}
+{% endblock %}
+
+{% block content %}
+
+<!-- =======================================================
+     Generic Table Viewer
+======================================================== -->
+
+<h2>
+
+Table : {{ table_name }}
+
+</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+{% for column in columns %}
+
+<th>
+
+{{ column }}
+
+</th>
+
+{% endfor %}
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for row in rows %}
+
+<tr>
+
+{% for value in row %}
+
+<td>
+
+{{ value }}
+
+</td>
+
+{% endfor %}
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endblock %}

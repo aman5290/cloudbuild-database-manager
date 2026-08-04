@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+Database Explorer
+{% endblock %}
+
+{% block content %}
+
+<h2>Database Explorer</h2>
+
+<p>
+Select a table to view its contents.
+</p>
+
+<hr>
+
+<!-- ==========================================================
+     Database Table List
+     ----------------------------------------------------------
+     Purpose:
+     Display every PostgreSQL table as a clickable card.
+
+     Future Scope:
+     - Table icon
+     - Row count
+     - Search
+     - Favorite tables
+=========================================================== -->
+
+<div class="table-grid">
+
+{% for table in tables %}
+
+    <a
+        class="table-card"
+        href="/table/{{ table[0] }}">
+
+        📄 {{ table[0] }}
+
+    </a>
+
+{% endfor %}
+
+</div>
+
+
+{% endblock %}
