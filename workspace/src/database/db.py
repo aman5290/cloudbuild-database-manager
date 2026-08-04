@@ -26,7 +26,7 @@ Last Updated
 
 import psycopg
 
-from config import DB_CONFIG
+from src.config import DB_CONFIG
 
 
 def get_connection():

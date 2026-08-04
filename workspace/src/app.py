@@ -38,14 +38,14 @@ from flask import (
     session
 )
 
-from database.db import (
+from src.database.db import (
     get_actor_by_id,
     get_all_actors,
     get_user_by_username,
     get_database_tables
 )
 
-from utils.password import verify_password
+from src.utils.password import verify_password
 
 
 # -----------------------------------------------------------
@@ -71,7 +71,7 @@ app = Flask(
 # This keeps sensitive information outside
 # the application source code.
 #
-from config import FLASK_SECRET_KEY
+from src.config import FLASK_SECRET_KEY
 
 app.secret_key = FLASK_SECRET_KEY
 
@@ -368,30 +368,14 @@ def database_explorer():
 # -----------------------------------------------------------
 @app.route("/table/<table_name>")
 def table_view(table_name):
-    """
-    Temporary placeholder.
-
-    This route will become the Generic
-    Table Viewer in the next sprint.
-    """
 
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    return f"""
-    <h2>{table_name}</h2>
-
-    <p>
-        Generic Table Viewer will be implemented
-        in Sprint 5.3.
-    </p>
-
-    <br>
-
-    <a href="/database-explorer">
-        ← Back to Database Explorer
-    </a>
-    """
+    return render_template(
+        "table-placeholder.html",
+        table_name=table_name
+    )
     
     
 
