@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}
+SQL Workspace
+{% endblock %}
+
+{% block content %}
+
+<!-- ==========================================================
+     SQL Workspace
+     ----------------------------------------------------------
+     Purpose
+     -------
+     Allow users to execute SQL queries against PostgreSQL.
+
+     Version 5
+     ---------
+     UI only.
+
+     Future Scope
+     ------------
+      Execute SELECT queries
+      Query History
+      Export CSV
+      Syntax Highlighting
+=========================================================== -->
+
+<h2>
+
+SQL Workspace
+
+</h2>
+
+<p>
+
+Write a SQL query below.
+
+</p>
+
+<hr>
+
+<form>
+
+<label>
+
+SQL Query
+
+</label>
+
+<br><br>
+
+<textarea
+    rows="15"
+    cols="100"
+    placeholder="SELECT * FROM actor LIMIT 10;">
+</textarea>
+
+<br><br>
+
+<button
+    type="submit">
+
+    Execute Query
+
+</button>
+
+</form>
+
+{% endblock %}
