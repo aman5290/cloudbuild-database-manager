@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}
+Saved Queries
+{% endblock %}
+
+{% block content %}
+
+<h2>
+
+Saved Queries
+
+</h2>
+
+<hr>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Name</th>
+
+<th>SQL</th>
+
+<th>Created</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for query in queries %}
+
+<tr>
+
+<td>
+
+{{ query[1] }}
+
+</td>
+
+<td>
+
+<pre>{{ query[2] }}</pre>
+
+</td>
+
+<td>
+
+{{ query[3] }}
+
+</td>
+
+
+
+
+
+<td>
+
+<a
+    class="btn btn-primary"
+    href="/saved-query/run/{{ query[0] }}"
+>
+Run
+</a>
+
+<a
+    class="btn btn-secondary"
+    href="/saved-query/edit/{{ query[0] }}"
+>
+Edit
+</a>
+
+<form
+    action="/saved-query/delete/{{ query[0] }}"
+    method="post"
+    style="display:inline;"
+>
+
+<button
+    class="btn btn-danger"
+    type="submit"
+    onclick="return confirm('Delete this saved query?');"
+>
+Delete
+</button>
+
+</form>
+
+</td>
+
+
+
+
+
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+<p>
+
+<a href="/dashboard">
+
+ Dashboard
+
+</a>
+
+</p>
+
+{% endblock %}

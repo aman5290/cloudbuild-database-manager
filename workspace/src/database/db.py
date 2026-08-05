@@ -732,7 +732,7 @@ def get_saved_queries(user_id: int):
                     updated_at
                 FROM portal.saved_queries
                 WHERE user_id = %s
-                ORDER BY query_name;
+                ORDER BY updated_at DESC;
                 """,
                 (user_id,),
             )
@@ -847,4 +847,3 @@ def delete_saved_query(
 
 
 
-                

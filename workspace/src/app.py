@@ -60,7 +60,12 @@ from src.database.db import (
     get_table_columns,
     execute_select_query,
     save_query_history,
-    get_query_history
+    get_query_history,
+    save_query,
+    get_saved_queries,
+    get_saved_query_by_id,
+    update_saved_query,
+    delete_saved_query
 )
 
 from src.utils.password import verify_password
@@ -476,77 +481,126 @@ def table_view(table_name):
 # SQL Workspace
 # ============================================================
 
-# -----------------------------------------------------------
-# SQL Workspace
-# -----------------------------------------------------------
 @app.route(
     "/sql-workspace",
     methods=["GET", "POST"]
 )
 def sql_workspace():
     """
-    =========================================================
+    ============================================================
     Purpose
-    ---------------------------------------------------------
-    Display and execute SQL queries.
+    ------------------------------------------------------------
+    Display the SQL Workspace and execute user-provided SQL
+    queries.
 
-    Version 5
-    ---------------------------------------------------------
-    Only SELECT statements are permitted.
-    =========================================================
+    Current Features
+    ------------------------------------------------------------
+    ✓ Execute SELECT queries
+    ✓ Display execution statistics
+    ✓ Display query results
+    ✓ Automatically save Query History
+    ✓ Load queries from Saved Queries
+
+    Future Scope
+    ------------------------------------------------------------
+    - Flash messages
+    - Export results
+    - Syntax highlighting
+    - Auto complete
+    ============================================================
     """
 
-    # -------------------------------------------------------
-    # Ensure user is authenticated.
-    # -------------------------------------------------------
+    # ------------------------------------------------------------
+    # Ensure the user is authenticated.
+    # ------------------------------------------------------------
 
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    # -------------------------------------------------------
-    # Default values.
-    # -------------------------------------------------------
+    # ------------------------------------------------------------
+    # Load a query from the session.
+    #
+    # This is used when the user clicks "Run" from the
+    # Saved Queries page.
+    #
+    # session.pop() removes the value after it is read so that
+    # refreshing the page does not reload the same query.
+    # ------------------------------------------------------------
 
-    query = ""
+    query = session.pop(
+        "loaded_query",
+        ""
+    )
+
+    # ------------------------------------------------------------
+    # Default page values.
+    # ------------------------------------------------------------
 
     result = None
 
     error = None
 
-    # -------------------------------------------------------
-    # Execute query.
-    # -------------------------------------------------------
+    # ------------------------------------------------------------
+    # Execute the submitted SQL query.
+    # ------------------------------------------------------------
 
     if request.method == "POST":
+
+        # --------------------------------------------------------
+        # Read the SQL query entered by the user.
+        # --------------------------------------------------------
 
         query = request.form.get(
             "query",
             ""
-        )
+        ).strip()
 
-        try:
+        # --------------------------------------------------------
+        # Validate that a query has been entered.
+        # --------------------------------------------------------
 
-            result = execute_select_query(query)
-            
-            # -------------------------------------------------------
-            # Save successful query to history.
-            # -------------------------------------------------------
+        if not query:
 
-            save_query_history(
+            error = "Please enter a SQL query."
 
-            user_id=session["user_id"],
+        else:
 
-            query_text=query,
+            try:
 
-            rows_returned=result["row_count"],
+                # ------------------------------------------------
+                # Execute the SQL query.
+                # ------------------------------------------------
 
-            execution_time_ms=result["execution_time_ms"]
+                result = execute_select_query(query)
 
-            )
+                # ------------------------------------------------
+                # Automatically save successful queries to
+                # Query History.
+                # ------------------------------------------------
 
-        except Exception as ex:
+                save_query_history(
 
-            error = str(ex)
+                    user_id=session["user_id"],
+
+                    query_text=query,
+
+                    rows_returned=result["row_count"],
+
+                    execution_time_ms=result["execution_time_ms"]
+
+                )
+
+            except Exception as error_exception:
+
+                # --------------------------------------------
+                # Display the database error.
+                # --------------------------------------------
+
+                error = str(error_exception)
+
+    # ------------------------------------------------------------
+    # Render the SQL Workspace.
+    # ------------------------------------------------------------
 
     return render_template(
 
@@ -559,13 +613,10 @@ def sql_workspace():
         error=error
 
     )
+
+
     
     
-
-# ============================================================
-# Query History
-# ============================================================
-
 # -----------------------------------------------------------
 # Query History
 # -----------------------------------------------------------
@@ -586,7 +637,140 @@ def query_history():
 
     )
 
+
+
+
+# ============================================================
+# Saved Queries
+# ============================================================
+
+@app.route("/saved-queries")
+def saved_queries():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    queries = get_saved_queries(
+        session["user_id"]
+    )
+
+    return render_template(
+        "saved-queries.html",
+        queries=queries,
+    )
+
+
+# ============================================================
+# New Saved Query
+# ============================================================
+
+
+@app.route(
+    "/saved-query/new",
+    methods=["POST"],
+)
+def new_saved_query():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    save_query(
+        session["user_id"],
+        request.form["query_name"],
+        request.form["query_text"],
+    )
+
+    return redirect(
+        url_for("saved_queries")
+    )
+
+
+# ============================================================
+# Delete Saved Query
+# ============================================================
+
+
+@app.route(
+    "/saved-query/delete/<int:saved_query_id>",
+    methods=["POST"],
+)
+def remove_saved_query(
+    saved_query_id,
+):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    delete_saved_query(
+        saved_query_id,
+        session["user_id"],
+    )
+
+    return redirect(
+        url_for("saved_queries")
+    )
+
+
+
+# ============================================================
+# Run Saved Query
+# ============================================================
+
+@app.route("/saved-query/run/<int:saved_query_id>")
+def run_saved_query(saved_query_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    query = get_saved_query_by_id(
+        saved_query_id,
+        session["user_id"],
+    )
+
+    if query is None:
+        return redirect(url_for("saved_queries"))
+
+    session["loaded_query"] = query[2]
+
+    return redirect(url_for("sql_workspace"))
+
+
+
+# ============================================================
+# Edit Saved Query
+# ============================================================
+       
+@app.route(
+    "/saved-query/edit/<int:saved_query_id>",
+    methods=["GET", "POST"],
+)
+def edit_saved_query(saved_query_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+
+        update_saved_query(
+            saved_query_id,
+            session["user_id"],
+            request.form["query_name"],
+            request.form["query_text"],
+        )
+
+        return redirect(url_for("saved_queries"))
+
+    query = get_saved_query_by_id(
+        saved_query_id,
+        session["user_id"],
+    )
+
+    return render_template(
+        "saved-query-form.html",
+        query=query,
+    )
         
+                    
 
 
 # -----------------------------------------------------------

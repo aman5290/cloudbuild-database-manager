@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Saved Query
+{% endblock %}
+
+{% block content %}
+
+<h2>
+
+Edit Saved Query
+
+</h2>
+
+<form method="POST">
+
+<label>
+
+Query Name
+
+</label>
+
+<br><br>
+
+<input
+    type="text"
+    name="query_name"
+    value="{{ query[1] }}"
+    required
+>
+
+<br><br>
+
+<label>
+
+SQL
+
+</label>
+
+<br><br>
+
+<textarea
+    name="query_text"
+    rows="15"
+    cols="100"
+>{{ query[2] }}</textarea>
+
+<br><br>
+
+<button type="submit">
+
+Save Changes
+
+</button>
+
+</form>
+
+{% endblock %}

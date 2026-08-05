@@ -11,18 +11,22 @@ SQL Workspace
      ----------------------------------------------------------
      Purpose
      -------
-     Allow users to execute SQL queries against PostgreSQL.
+     Allow authenticated users to execute read-only SQL queries
+     against the PostgreSQL database.
 
-     Version 5
-     ---------
-     UI only.
+     Current Features
+     ----------------
+     ✓ Execute SELECT queries
+     ✓ Execution statistics
+     ✓ Display query results
+     ✓ Save frequently used queries
 
      Future Scope
      ------------
-      Execute SELECT queries
-      Query History
-      Export CSV
-      Syntax Highlighting
+     - Syntax Highlighting
+     - Auto Complete
+     - Export Results
+     - Saved Query Execution
 =========================================================== -->
 
 <h2>
@@ -39,6 +43,10 @@ Write a SQL query below.
 
 <hr>
 
+<!-- ==========================================================
+     SQL Query Form
+=========================================================== -->
+
 <form method="POST">
 
 <label>
@@ -50,10 +58,9 @@ SQL Query
 <br><br>
 
 <textarea
+    class="sql-editor"
     name="query"
-    rows="15"
-    cols="100"
-    placeholder="SELECT * FROM actor LIMIT 10;">{{ query }}</textarea>
+>{{ query }}</textarea>
 
 <br><br>
 
@@ -65,7 +72,59 @@ Execute Query
 
 </form>
 
-<!-- ======================= Error Section =================================== -->
+<!-- ==========================================================
+     Save Query
+=========================================================== -->
+
+{% if query and result %}
+
+<hr>
+
+<h3>
+
+Save Query
+
+</h3>
+
+<form
+    action="/saved-query/new"
+    method="POST"
+>
+
+<label>
+
+Query Name
+
+</label>
+
+<br><br>
+
+<input
+    type="text"
+    name="query_name"
+    required
+>
+
+<input
+    type="hidden"
+    name="query_text"
+    value="{{ query }}"
+>
+
+<br><br>
+
+<input
+    type="submit"
+    value="Save Query"
+>
+
+</form>
+
+{% endif %}
+
+<!-- ==========================================================
+     Error Section
+=========================================================== -->
 
 {% if error %}
 
@@ -85,15 +144,13 @@ Error
 
 {% endif %}
 
-
-<!-- ======================= Result Section =================================== -->
-
-
+<!-- ==========================================================
+     Query Results
+=========================================================== -->
 
 {% if result %}
 
 <hr>
-
 
 <!-- ==========================================================
      Execution Summary
@@ -107,69 +164,61 @@ Execution Summary
 
 <table>
 
-    <tr>
+<tr>
 
-        <th>
+<th>
 
-            Execution Time
+Execution Time
 
-        </th>
+</th>
 
-        <td>
+<td>
 
-            {{ result.execution_time_ms }} ms
+{{ result.execution_time_ms }} ms
 
-        </td>
+</td>
 
-    </tr>
+</tr>
 
-    <tr>
+<tr>
 
-        <th>
+<th>
 
-            Rows Returned
+Rows Returned
 
-        </th>
+</th>
 
-        <td>
+<td>
 
-            {{ result.row_count }}
+{{ result.row_count }}
 
-        </td>
+</td>
 
-    </tr>
+</tr>
 
-    <tr>
+<tr>
 
-        <th>
+<th>
 
-            Columns Returned
+Columns Returned
 
-        </th>
+</th>
 
-        <td>
+<td>
 
-            {{ result.column_count }}
+{{ result.column_count }}
 
-        </td>
+</td>
 
-    </tr>
+</tr>
 
 </table>
 
 <br>
 
 <!-- ==========================================================
-     Results
+     Result Set
 =========================================================== -->
-
-<h3>
-
-Results
-
-</h3>
-
-
 
 <h3>
 
@@ -222,9 +271,5 @@ Results
 </table>
 
 {% endif %}
-
-
-
-
 
 {% endblock %}
