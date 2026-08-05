@@ -2,7 +2,7 @@
 =============================================================
 Project : Pagila PostgreSQL Web Portal
 
-Version : 4.0.0
+Version : 6.1.3
 
 File    : constants.py
 
@@ -15,7 +15,11 @@ Application-wide constants.
 =============================================================
 """
 
-# Session timeout (5 minutes)
+# ============================================================
+# Application Constants
+# ============================================================
+
+# Session timeout (minutes)
 SESSION_TIMEOUT_MINUTES = 5
 
 # Application name

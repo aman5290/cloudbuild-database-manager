@@ -2,7 +2,7 @@
 =============================================================
 Project : Pagila PostgreSQL Web Portal
 
-Version : 3.0.0
+Version : 6.1.3
 
 File    : db.py
 
@@ -24,12 +24,17 @@ Last Updated
 =============================================================
 """
 
+import time
+
 import psycopg
 from psycopg import sql
 
 
 from src.config import DB_CONFIG
 
+# ============================================================
+# Connection Functions
+# ============================================================
 
 def get_connection():
     """
@@ -38,66 +43,10 @@ def get_connection():
 
     return psycopg.connect(**DB_CONFIG)
 
+# ============================================================
+# Authentication Functions
+# ============================================================
 
-def get_actor_by_id(actor_id):
-    """
-    Retrieve one actor using Actor ID.
-    """
-
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-
-            cur.execute("""
-                SELECT
-                    actor_id,
-                    first_name,
-                    last_name
-                FROM actor
-                WHERE actor_id = %s;
-            """, (actor_id,))
-
-            return cur.fetchone()
-
-
-def get_all_actors():
-    """
-    Retrieve all actors along with column names.
-
-    Returns
-    -------
-    tuple
-        (
-            columns,
-            rows
-        )
-    """
-
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-
-            cur.execute("""
-                SELECT
-                    actor_id,
-                    first_name,
-                    last_name
-                FROM actor
-                ORDER BY actor_id;
-            """)
-
-            # Fetch all rows
-            rows = cur.fetchall()
-
-            # Read column names returned by PostgreSQL
-            columns = [column.name for column in cur.description]
-
-            return columns, rows
-            
-
-
-
-# -----------------------------------------------------------
-# Get Application User
-# -----------------------------------------------------------
 def get_user_by_username(username):
     """
     Retrieve an application user using the username.
@@ -148,6 +97,74 @@ def get_user_by_username(username):
 # -----------------------------------------------------------
 # Retrieve Database Tables
 # -----------------------------------------------------------
+
+# ============================================================
+# Legacy Actor Functions
+# ============================================================
+
+def get_actor_by_id(actor_id):
+    """
+    Retrieve one actor using Actor ID.
+    """
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                SELECT
+                    actor_id,
+                    first_name,
+                    last_name
+                FROM actor
+                WHERE actor_id = %s;
+            """, (actor_id,))
+
+            return cur.fetchone()
+
+def get_all_actors():
+    """
+    Retrieve all actors along with column names.
+
+    Returns
+    -------
+    tuple
+        (
+            columns,
+            rows
+        )
+    """
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                SELECT
+                    actor_id,
+                    first_name,
+                    last_name
+                FROM actor
+                ORDER BY actor_id;
+            """)
+
+            # Fetch all rows
+            rows = cur.fetchall()
+
+            # Read column names returned by PostgreSQL
+            columns = [column.name for column in cur.description]
+
+            return columns, rows
+            
+
+
+
+# -----------------------------------------------------------
+# Get Application User
+# -----------------------------------------------------------
+
+# ============================================================
+# Database Explorer Functions
+# ============================================================
+
 def get_database_tables():
     """
     =========================================================
@@ -191,6 +208,7 @@ def get_database_tables():
 # -----------------------------------------------------------
 # Retrieve Table Data
 # -----------------------------------------------------------
+
 def get_table_data(table_name, limit=100):
     """
     =========================================================
@@ -243,6 +261,11 @@ def get_table_data(table_name, limit=100):
 # -----------------------------------------------------------
 # Retrieve Table Information
 # -----------------------------------------------------------
+
+# ============================================================
+# Metadata Functions
+# ============================================================
+
 def get_table_information(table_name):
     """
     =========================================================
@@ -328,6 +351,7 @@ def get_table_information(table_name):
 # -----------------------------------------------------------
 # Retrieve Table Columns
 # -----------------------------------------------------------
+
 def get_table_columns(table_name):
     """
     =========================================================
@@ -391,6 +415,11 @@ def get_table_columns(table_name):
 # -----------------------------------------------------------
 # Execute SELECT Query
 # -----------------------------------------------------------
+
+# ============================================================
+# SQL Workspace Functions
+# ============================================================
+
 def execute_select_query(query):
     """
     =========================================================
@@ -422,11 +451,6 @@ def execute_select_query(query):
     - Export CSV
     =========================================================
     """
-
-    # -------------------------------------------------------
-    # Import required module.
-    # -------------------------------------------------------
-    import time
 
     # -------------------------------------------------------
     # Remove unnecessary whitespace.
@@ -512,6 +536,11 @@ def execute_select_query(query):
 # -----------------------------------------------------------
 # Save Query History
 # -----------------------------------------------------------
+
+# ============================================================
+# Query History Functions
+# ============================================================
+
 def save_query_history(
     user_id,
     query_text,
@@ -637,7 +666,3 @@ def get_query_history(user_id):
             )
 
             return cur.fetchall()
-
-
-
-                                
