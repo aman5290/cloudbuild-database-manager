@@ -43,7 +43,9 @@ from src.database.db import (
     get_all_actors,
     get_user_by_username,
     get_database_tables,
-    get_table_data
+    get_table_data,
+    get_table_information,
+    get_table_columns
 )
 
 from src.utils.password import verify_password
@@ -403,6 +405,17 @@ def table_view(table_name):
     try:
 
         columns, rows = get_table_data(table_name)
+        
+        # -------------------------------------------------------
+        # Retrieve column metadata.
+        # -------------------------------------------------------
+
+        column_info = get_table_columns(table_name)
+        
+        # -------------------------------------------------------
+        # Retrieve metadata for the selected table.
+        # -------------------------------------------------------
+        table_info = get_table_information(table_name)
 
     except Exception as error:
 
@@ -415,6 +428,8 @@ def table_view(table_name):
     return render_template(
         "table-view.html",
         table_name=table_name,
+        table_info=table_info,
+        column_info=column_info,
         columns=columns,
         rows=rows
     )

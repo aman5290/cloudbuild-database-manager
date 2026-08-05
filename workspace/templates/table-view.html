@@ -8,121 +8,222 @@
 
 <!-- ==========================================================
      Generic Table Viewer
-
+     ----------------------------------------------------------
      Purpose
      -------
-     Display the contents of any PostgreSQL table.
+     Display the contents and metadata of any PostgreSQL table.
+
+     Features
+     --------
+     • Table summary
+     • Column metadata
+     • Table data
 
      Future Scope
      ------------
-     - Pagination
-     - Sorting
-     - Search
-     - Edit
+     • Pagination
+     • Sorting
+     • Search
+     • Export
+     • CRUD Operations
+=========================================================== -->
+
+<!-- ==========================================================
+     Page Heading
 =========================================================== -->
 
 <h2>
 
-Table : {{ table_name }}
+    Table : {{ table_name }}
 
 </h2>
 
-
-<!-- ==========================================================
-     Table Information
-=========================================================== -->
-
-<table>
-
-<tr>
-
-    <th>Rows</th>
-
-    <td>{{ table_info.row_count }}</td>
-
-</tr>
-
-<tr>
-
-    <th>Columns</th>
-
-    <td>{{ table_info.column_count }}</td>
-
-</tr>
-
-<tr>
-
-    <th>Primary Key</th>
-
-    <td>{{ table_info.primary_key }}</td>
-
-</tr>
-
-</table>
-
-<br>
-
-
-
 <p>
 
-Displaying the first {{ rows|length }} rows.
+    Displaying the first {{ rows|length }} rows.
 
 </p>
 
 <hr>
 
+<!-- ==========================================================
+     Table Summary
+     ----------------------------------------------------------
+     Purpose
+     -------
+     Display high-level information about the selected table.
+=========================================================== -->
+
 <table>
 
-<thead>
+    <tr>
 
-<tr>
+        <th>Rows</th>
 
-{% for column in columns %}
+        <td>{{ table_info.row_count }}</td>
 
-    <th>
+    </tr>
 
-        {{ column }}
+    <tr>
 
-    </th>
+        <th>Columns</th>
 
-{% endfor %}
+        <td>{{ table_info.column_count }}</td>
 
-</tr>
+    </tr>
 
-</thead>
+    <tr>
 
-<tbody>
+        <th>Primary Key</th>
 
-{% for row in rows %}
+        <td>{{ table_info.primary_key }}</td>
 
-<tr>
-
-    {% for value in row %}
-
-    <td>
-
-        {{ value }}
-
-    </td>
-
-    {% endfor %}
-
-</tr>
-
-{% endfor %}
-
-</tbody>
+    </tr>
 
 </table>
 
+<br>
+
+<!-- ==========================================================
+     Column Information
+     ----------------------------------------------------------
+     Purpose
+     -------
+     Display metadata for every column in the selected table.
+
+     Information Displayed
+     ---------------------
+     • Column Name
+     • Data Type
+     • Nullable
+=========================================================== -->
+
+<h3>
+
+    Column Information
+
+</h3>
+
+<table>
+
+    <thead>
+
+        <tr>
+
+            <th>Column Name</th>
+
+            <th>Data Type</th>
+
+            <th>Nullable</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for column in column_info %}
+
+        <tr>
+
+            <td>
+
+                {{ column.column_name }}
+
+            </td>
+
+            <td>
+
+                {{ column.data_type }}
+
+            </td>
+
+            <td>
+
+                {{ column.nullable }}
+
+            </td>
+
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+<br>
+
+<!-- ==========================================================
+     Table Data
+     ----------------------------------------------------------
+     Purpose
+     -------
+     Display the records stored in the selected table.
+
+     Notes
+     -----
+     • Data is generated dynamically.
+     • Works for every PostgreSQL table.
+=========================================================== -->
+
+<table>
+
+    <thead>
+
+        <tr>
+
+        {% for column in columns %}
+
+            <th>
+
+                {{ column }}
+
+            </th>
+
+        {% endfor %}
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for row in rows %}
+
+        <tr>
+
+        {% for value in row %}
+
+            <td>
+
+                {{ value }}
+
+            </td>
+
+        {% endfor %}
+
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+<br>
+
+<!-- ==========================================================
+     Navigation
+=========================================================== -->
+
 <p>
 
-<a href="/database-explorer">
+    <a href="/database-explorer">
 
-← Back to Database Explorer
+        ← Back to Database Explorer
 
-</a>
+    </a>
 
 </p>
 

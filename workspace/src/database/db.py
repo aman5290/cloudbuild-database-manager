@@ -320,3 +320,66 @@ def get_table_information(table_name):
                 "primary_key": primary_key
             }
                         
+
+
+
+
+
+# -----------------------------------------------------------
+# Retrieve Table Columns
+# -----------------------------------------------------------
+def get_table_columns(table_name):
+    """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    Retrieve metadata for all columns in a PostgreSQL table.
+
+    Parameters
+    ---------------------------------------------------------
+    table_name : str
+
+    Returns
+    ---------------------------------------------------------
+    list[dict]
+
+    Example
+    ---------------------------------------------------------
+    [
+        {
+            "column_name": "actor_id",
+            "data_type": "integer",
+            "nullable": "NO"
+        }
+    ]
+
+    Future Scope
+    ---------------------------------------------------------
+    - Character length
+    - Default value
+    - Identity columns
+    =========================================================
+    """
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                SELECT
+                    column_name,
+                    data_type,
+                    is_nullable
+                FROM information_schema.columns
+                WHERE table_schema = 'public'
+                  AND table_name = %s
+                ORDER BY ordinal_position;
+            """, (table_name,))
+
+            return [
+                {
+                    "column_name": row[0],
+                    "data_type": row[1],
+                    "nullable": row[2]
+                }
+                for row in cur.fetchall()
+            ]
