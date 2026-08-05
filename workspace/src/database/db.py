@@ -503,4 +503,81 @@ def execute_select_query(query):
             
             
             
-            
+
+
+# ============================================================
+# Query History Functions
+# ============================================================
+
+# -----------------------------------------------------------
+# Save Query History
+# -----------------------------------------------------------
+def save_query_history(
+    user_id,
+    query_text,
+    rows_returned,
+    execution_time_ms
+):
+    """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    Save a successfully executed SQL query.
+
+    Parameters
+    ---------------------------------------------------------
+    user_id : int
+
+    query_text : str
+
+    rows_returned : int
+
+    execution_time_ms : float
+
+    Returns
+    ---------------------------------------------------------
+    None
+
+    Future Scope
+    ---------------------------------------------------------
+    - Save failed queries
+    - Database name
+    - Client IP
+    =========================================================
+    """
+
+    with get_connection() as conn:
+
+        with conn.cursor() as cur:
+
+            cur.execute(
+                """
+                INSERT INTO portal.query_history
+                (
+                    user_id,
+                    query_text,
+                    rows_returned,
+                    execution_time_ms
+                )
+                VALUES
+                (
+                    %s,
+                    %s,
+                    %s,
+                    %s
+                );
+                """,
+                (
+                    user_id,
+                    query_text,
+                    rows_returned,
+                    execution_time_ms
+                )
+            )
+
+        conn.commit()
+
+
+
+
+                    

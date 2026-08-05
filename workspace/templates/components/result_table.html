@@ -1,0 +1,61 @@
+<!-- ==========================================================
+     Generic Result Table Component
+
+     Purpose
+     -------
+     Render a dynamic table using:
+
+     columns
+     rows
+
+     Used By
+     -------
+      Generic Table Viewer
+      SQL Workspace
+      Query History (Future)
+      Saved Queries (Future)
+=========================================================== -->
+
+<table class="data-table">
+
+    <thead>
+
+        <tr>
+
+        {% for column in columns %}
+
+            <th>
+
+                {{ column }}
+
+            </th>
+
+        {% endfor %}
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for row in rows %}
+
+        <tr>
+
+        {% for value in row %}
+
+            <td>
+
+                {{ value }}
+
+            </td>
+
+        {% endfor %}
+
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
