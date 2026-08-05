@@ -39,7 +39,7 @@ Write a SQL query below.
 
 <hr>
 
-<form>
+<form method="POST">
 
 <label>
 
@@ -50,20 +50,104 @@ SQL Query
 <br><br>
 
 <textarea
+    name="query"
     rows="15"
     cols="100"
-    placeholder="SELECT * FROM actor LIMIT 10;">
-</textarea>
+    placeholder="SELECT * FROM actor LIMIT 10;">{{ query }}</textarea>
 
 <br><br>
 
-<button
-    type="submit">
+<button type="submit">
 
-    Execute Query
+Execute Query
 
 </button>
 
 </form>
+
+<!-- ======================= Error Section =================================== -->
+
+{% if error %}
+
+<hr>
+
+<h3>
+
+Error
+
+</h3>
+
+<p>
+
+{{ error }}
+
+</p>
+
+{% endif %}
+
+
+<!-- ======================= Result Section =================================== -->
+
+
+
+{% if result %}
+
+<hr>
+
+<h3>
+
+Results
+
+</h3>
+
+<table>
+
+<thead>
+
+<tr>
+
+{% for column in result.columns %}
+
+<th>
+
+{{ column }}
+
+</th>
+
+{% endfor %}
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for row in result.rows %}
+
+<tr>
+
+{% for value in row %}
+
+<td>
+
+{{ value }}
+
+</td>
+
+{% endfor %}
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endif %}
+
+
+
+
 
 {% endblock %}

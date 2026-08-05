@@ -45,7 +45,8 @@ from src.database.db import (
     get_database_tables,
     get_table_data,
     get_table_information,
-    get_table_columns
+    get_table_columns,
+    execute_select_query
 )
 
 from src.utils.password import verify_password
@@ -440,25 +441,69 @@ def table_view(table_name):
 # -----------------------------------------------------------
 # SQL Workspace
 # -----------------------------------------------------------
-@app.route("/sql-workspace")
+@app.route(
+    "/sql-workspace",
+    methods=["GET", "POST"]
+)
 def sql_workspace():
     """
     =========================================================
     Purpose
     ---------------------------------------------------------
-    Display the SQL Workspace.
+    Display and execute SQL queries.
 
-    Future Scope
+    Version 5
     ---------------------------------------------------------
-    Execute SQL queries.
+    Only SELECT statements are permitted.
     =========================================================
     """
+
+    # -------------------------------------------------------
+    # Ensure user is authenticated.
+    # -------------------------------------------------------
 
     if "user_id" not in session:
         return redirect(url_for("login"))
 
+    # -------------------------------------------------------
+    # Default values.
+    # -------------------------------------------------------
+
+    query = ""
+
+    result = None
+
+    error = None
+
+    # -------------------------------------------------------
+    # Execute query.
+    # -------------------------------------------------------
+
+    if request.method == "POST":
+
+        query = request.form.get(
+            "query",
+            ""
+        )
+
+        try:
+
+            result = execute_select_query(query)
+
+        except Exception as ex:
+
+            error = str(ex)
+
     return render_template(
-        "sql-workspace.html"
+
+        "sql-workspace.html",
+
+        query=query,
+
+        result=result,
+
+        error=error
+
     )
     
     
