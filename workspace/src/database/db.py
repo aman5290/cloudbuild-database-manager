@@ -404,12 +404,12 @@ def execute_select_query(query):
 
     Returns
     ---------------------------------------------------------
-    dict
-
-    {
-        "columns": [],
-        "rows": []
-    }
+    Dictionary containing:
+        - columns
+        - rows
+        - row_count
+        - column_count
+        - execution_time_ms
 
     Security
     ---------------------------------------------------------
@@ -417,22 +417,25 @@ def execute_select_query(query):
 
     Future Scope
     ---------------------------------------------------------
-    - Execution time
-    - Query history
+    - Query History
     - Pagination
+    - Export CSV
     =========================================================
     """
 
     # -------------------------------------------------------
-    # Remove leading/trailing whitespace.
+    # Import required module.
     # -------------------------------------------------------
-
-    query = query.strip()
+    import time
 
     # -------------------------------------------------------
-    # Allow only SELECT statements.
+    # Remove unnecessary whitespace.
     # -------------------------------------------------------
+    query = query.strip().rstrip(";")
 
+    # -------------------------------------------------------
+    # Validate query.
+    # -------------------------------------------------------
     if not query.lower().startswith("select"):
 
         raise ValueError(
@@ -443,23 +446,61 @@ def execute_select_query(query):
 
         with conn.cursor() as cur:
 
+            # ---------------------------------------------------
+            # Start execution timer.
+            # ---------------------------------------------------
+            start_time = time.perf_counter()
+
+            # ---------------------------------------------------
+            # Execute query.
+            # ---------------------------------------------------
             cur.execute(query)
 
+            # ---------------------------------------------------
+            # Retrieve column names.
+            # ---------------------------------------------------
             columns = [
                 column.name
                 for column in cur.description
             ]
 
+            # ---------------------------------------------------
+            # Retrieve all rows.
+            # ---------------------------------------------------
             rows = cur.fetchall()
 
+            # ---------------------------------------------------
+            # Stop execution timer.
+            # ---------------------------------------------------
+            end_time = time.perf_counter()
+
+            # ---------------------------------------------------
+            # Calculate execution time.
+            # ---------------------------------------------------
+            execution_time_ms = (
+                end_time - start_time
+            ) * 1000
+
+            # ---------------------------------------------------
+            # Return query results.
+            # ---------------------------------------------------
             return {
 
                 "columns": columns,
 
-                "rows": rows
+                "rows": rows,
+
+                "row_count": len(rows),
+
+                "column_count": len(columns),
+
+                "execution_time_ms": round(
+                    execution_time_ms,
+                    2
+                )
 
             }
             
             
             
-                        
+            
