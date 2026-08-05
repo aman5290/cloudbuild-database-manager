@@ -580,4 +580,64 @@ def save_query_history(
 
 
 
-                    
+
+# ============================================================
+# Get Query History
+# ============================================================
+
+def get_query_history(user_id):
+    """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    Retrieve SQL query history for a user.
+
+    Parameters
+    ---------------------------------------------------------
+    user_id : int
+
+    Returns
+    ---------------------------------------------------------
+    list
+
+    Future Scope
+    ---------------------------------------------------------
+    - Pagination
+    - Search
+    - Filter by date
+    =========================================================
+    """
+
+    with get_connection() as conn:
+
+        with conn.cursor() as cur:
+
+            cur.execute(
+                """
+                SELECT
+
+                    history_id,
+
+                    query_text,
+
+                    rows_returned,
+
+                    execution_time_ms,
+
+                    executed_at
+
+                FROM portal.query_history
+
+                WHERE user_id = %s
+
+                ORDER BY executed_at DESC;
+
+                """,
+                (user_id,)
+            )
+
+            return cur.fetchall()
+
+
+
+                                

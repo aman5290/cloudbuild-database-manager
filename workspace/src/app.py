@@ -47,7 +47,8 @@ from src.database.db import (
     get_table_information,
     get_table_columns,
     execute_select_query,
-    save_query_history
+    save_query_history,
+    get_query_history
 )
 
 from src.utils.password import verify_password
@@ -524,6 +525,27 @@ def sql_workspace():
     )
     
     
+
+# -----------------------------------------------------------
+# Query History
+# -----------------------------------------------------------
+@app.route("/query-history")
+def query_history():
+
+    if "user_id" not in session:
+
+        return redirect(url_for("login"))
+
+    history = get_query_history(session["user_id"])
+
+    return render_template(
+
+        "query-history.html",
+
+        history=history
+
+    )
+
         
 
 
