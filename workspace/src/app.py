@@ -46,7 +46,8 @@ from src.database.db import (
     get_table_data,
     get_table_information,
     get_table_columns,
-    execute_select_query
+    execute_select_query,
+    save_query_history
 )
 
 from src.utils.password import verify_password
@@ -489,6 +490,22 @@ def sql_workspace():
         try:
 
             result = execute_select_query(query)
+            
+            # -------------------------------------------------------
+            # Save successful query to history.
+            # -------------------------------------------------------
+
+            save_query_history(
+
+            user_id=session["user_id"],
+
+            query_text=query,
+
+            rows_returned=result["row_count"],
+
+            execution_time_ms=result["execution_time_ms"]
+
+            )
 
         except Exception as ex:
 
