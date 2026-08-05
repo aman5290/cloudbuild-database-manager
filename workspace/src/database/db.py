@@ -383,3 +383,83 @@ def get_table_columns(table_name):
                 }
                 for row in cur.fetchall()
             ]
+            
+
+
+
+
+# -----------------------------------------------------------
+# Execute SELECT Query
+# -----------------------------------------------------------
+def execute_select_query(query):
+    """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    Execute a read-only SQL query.
+
+    Parameters
+    ---------------------------------------------------------
+    query : str
+
+    Returns
+    ---------------------------------------------------------
+    dict
+
+    {
+        "columns": [],
+        "rows": []
+    }
+
+    Security
+    ---------------------------------------------------------
+    Only SELECT statements are permitted.
+
+    Future Scope
+    ---------------------------------------------------------
+    - Execution time
+    - Query history
+    - Pagination
+    =========================================================
+    """
+
+    # -------------------------------------------------------
+    # Remove leading/trailing whitespace.
+    # -------------------------------------------------------
+
+    query = query.strip()
+
+    # -------------------------------------------------------
+    # Allow only SELECT statements.
+    # -------------------------------------------------------
+
+    if not query.lower().startswith("select"):
+
+        raise ValueError(
+            "Only SELECT statements are allowed."
+        )
+
+    with get_connection() as conn:
+
+        with conn.cursor() as cur:
+
+            cur.execute(query)
+
+            columns = [
+                column.name
+                for column in cur.description
+            ]
+
+            rows = cur.fetchall()
+
+            return {
+
+                "columns": columns,
+
+                "rows": rows
+
+            }
+            
+            
+            
+                        
