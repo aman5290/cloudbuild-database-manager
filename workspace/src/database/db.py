@@ -102,57 +102,57 @@ def get_user_by_username(username):
 # Legacy Actor Functions
 # ============================================================
 
-def get_actor_by_id(actor_id):
-    """
-    Retrieve one actor using Actor ID.
-    """
-
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-
-            cur.execute("""
-                SELECT
-                    actor_id,
-                    first_name,
-                    last_name
-                FROM actor
-                WHERE actor_id = %s;
-            """, (actor_id,))
-
-            return cur.fetchone()
-
-def get_all_actors():
-    """
-    Retrieve all actors along with column names.
-
-    Returns
-    -------
-    tuple
-        (
-            columns,
-            rows
-        )
-    """
-
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-
-            cur.execute("""
-                SELECT
-                    actor_id,
-                    first_name,
-                    last_name
-                FROM actor
-                ORDER BY actor_id;
-            """)
-
-            # Fetch all rows
-            rows = cur.fetchall()
-
-            # Read column names returned by PostgreSQL
-            columns = [column.name for column in cur.description]
-
-            return columns, rows
+#def get_actor_by_id(actor_id):
+#    """
+#    Retrieve one actor using Actor ID.
+#    """
+#
+#    with get_connection() as conn:
+#        with conn.cursor() as cur:
+#
+#            cur.execute("""
+#                SELECT
+#                    actor_id,
+#                    first_name,
+#                    last_name
+#                FROM actor
+#                WHERE actor_id = %s;
+#            """, (actor_id,))
+#
+#            return cur.fetchone()
+#
+#def get_all_actors():
+#    """
+#    Retrieve all actors along with column names.
+#
+#    Returns
+#    -------
+#    tuple
+#        (
+#            columns,
+#            rows
+#        )
+#    """
+#
+#    with get_connection() as conn:
+#        with conn.cursor() as cur:
+#
+#            cur.execute("""
+#                SELECT
+#                    actor_id,
+#                    first_name,
+#                    last_name
+#                FROM actor
+#                ORDER BY actor_id;
+#            """)
+#
+#            # Fetch all rows
+#            rows = cur.fetchall()
+#
+#            # Read column names returned by PostgreSQL
+#            columns = [column.name for column in cur.description]
+#
+#            return columns, rows
             
 
 

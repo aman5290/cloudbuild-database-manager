@@ -43,16 +43,25 @@ from flask import (
     request,
     redirect,
     url_for,
-    session
+    session,
+    flash
 )
+
+
+from src.constants import (
+    APP_NAME,
+    APP_VERSION,
+    SESSION_TIMEOUT_MINUTES,
+)
+
 
 # ============================================================
 # Project Imports
 # ============================================================
 
 from src.database.db import (
-    get_actor_by_id,
-    get_all_actors,
+#    get_actor_by_id,
+#    get_all_actors,
     get_user_by_username,
     get_database_tables,
     get_table_data,
@@ -67,6 +76,8 @@ from src.database.db import (
     update_saved_query,
     delete_saved_query
 )
+
+from src.utils.auth import login_required
 
 from src.utils.password import verify_password
 
@@ -90,6 +101,28 @@ app = Flask(
 )
 
 
+
+# ============================================================
+# Global Template Variables
+# ============================================================
+
+@app.context_processor
+def inject_app_info():
+
+    return {
+
+        "app_name": APP_NAME,
+
+        "app_version": APP_VERSION,
+
+        "session_timeout_minutes": int(
+            SESSION_TIMEOUT.total_seconds() / 60
+        ),
+
+    }
+
+
+
 # -----------------------------------------------------------
 # Flask Secret Key
 # -----------------------------------------------------------
@@ -110,7 +143,11 @@ app.secret_key = FLASK_SECRET_KEY
 # Automatically log out users after 5 minutes
 # of inactivity.
 #
-SESSION_TIMEOUT = timedelta(minutes=5)
+SESSION_TIMEOUT = timedelta(
+
+    minutes=SESSION_TIMEOUT_MINUTES
+
+)
 
 
 # ============================================================
@@ -123,49 +160,52 @@ SESSION_TIMEOUT = timedelta(minutes=5)
 @app.route("/")
 def home():
     """
-    Display application home page.
+    Redirect users to the login page.
     """
-    return render_template("home.html")
+
+    return redirect(
+        url_for("login")
+    )
 
 
 # -----------------------------------------------------------
 # Search One Actor
 # -----------------------------------------------------------
-@app.route("/actor")
-def actor_search():
-    """
-    Search actor using Actor ID.
-    """
+#@app.route("/actor")
+#def actor_search():
+#    """
+#    Search actor using Actor ID.
+#    """
 
-    actor_id = request.args.get("actor_id", type=int)
+#    actor_id = request.args.get("actor_id", type=int)
 
-    if actor_id is None:
-        return "Actor ID is required.", 400
+#    if actor_id is None:
+#        return "Actor ID is required.", 400
 
-    actor = get_actor_by_id(actor_id)
+#    actor = get_actor_by_id(actor_id)
 
-    return render_template(
-        "actor.html",
-        actor=actor
-    )
+#    return render_template(
+#        "actor.html",
+#        actor=actor
+#    )
 
 
 # -----------------------------------------------------------
 # View All Actors
 # -----------------------------------------------------------
-@app.route("/actors")
-def actor_list():
-    """
-    Display all actors.
-    """
+#@app.route("/actors")
+#def actor_list():
+#    """
+#    Display all actors.
+#    """
 
-    columns, rows = get_all_actors()
+#    columns, rows = get_all_actors()
 
-    return render_template(
-        "actor-list.html",
-        columns=columns,
-        rows=rows
-    )
+#    return render_template(
+#        "actor-list.html",
+#        columns=columns,
+#        rows=rows
+#    )
 
 
 
@@ -255,19 +295,66 @@ def login():
     # -----------------------------------------------------------
     # Login Successful
     # -----------------------------------------------------------
+    #
+    # Create a new authenticated session.
+    #
+    # Only store the minimum information required by the
+    # application. Never store passwords or password hashes
+    # inside the session.
+    # -----------------------------------------------------------
 
+    # Clear any previous session data.
+    session.clear()
+
+    # Mark this as a permanent session.
+    session.permanent = True
+
+    # -----------------------------------------------------------
     # Store authenticated user information.
-    # Never store passwords or password hashes.
+    #
+    # get_user_by_username() returns a tuple:
+    #
+    # user[0] -> user_id
+    # user[1] -> username
+    # user[2] -> password_hash
+    # -----------------------------------------------------------
+
     session["user_id"] = user[0]
+
     session["username"] = user[1]
-    session["full_name"] = user[3]
-    session["role"] = user[4]
-    # Store the login time in UTC.
-    session["last_activity"] = datetime.now(timezone.utc).isoformat()
 
-    # Redirect user to Dashboard.
-    return redirect(url_for("dashboard"))
+    # -----------------------------------------------------------
+    # Store the login timestamp.
+    #
+    # This will later be used for session timeout handling
+    # and activity tracking.
+    # -----------------------------------------------------------
 
+    session["last_activity"] = datetime.now(
+        timezone.utc
+    ).isoformat()
+
+    # -----------------------------------------------------------
+    # Display success message.
+    # -----------------------------------------------------------
+
+    flash(
+
+        "Login successful.",
+
+        "success",
+
+    )
+
+    # -----------------------------------------------------------
+    # Redirect the user to the Dashboard.
+    # -----------------------------------------------------------
+
+    return redirect(
+
+        url_for("dashboard")
+
+    )
 
 
 # ============================================================
@@ -278,6 +365,7 @@ def login():
 # Dashboard
 # -----------------------------------------------------------
 @app.route("/dashboard")
+@login_required
 def dashboard():
     """
     =========================================================
@@ -298,8 +386,14 @@ def dashboard():
     """
 
     # Check whether the user is logged in.
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    #if "user_id" not in session:
+    #    return redirect(url_for("login"))
+    
+    
+    return render_template(
+        "dashboard.html"
+    )
+
 
     # Retrieve the last recorded activity time.
     last_activity = datetime.fromisoformat(
@@ -349,17 +443,19 @@ def logout():
     - Record logout IP
     =========================================================
     """
-
+    
     # Remove all session data.
     session.clear()
-
+    
     # Redirect user to the Login page with
     # a confirmation message.
+    flash(
+        "You have been logged out.",
+        "info"
+    )
+
     return redirect(
-        url_for(
-            "login",
-            message="You have been logged out successfully."
-        )
+        url_for("login")
     )
 
 
@@ -372,6 +468,7 @@ def logout():
 # Database Explorer
 # -----------------------------------------------------------
 @app.route("/database-explorer")
+@login_required
 def database_explorer():
     """
     =========================================================
@@ -393,8 +490,8 @@ def database_explorer():
     """
 
     # Ensure the user is authenticated.
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    #if "user_id" not in session:
+    #    return redirect(url_for("login"))
 
     tables = get_database_tables()
 
@@ -410,6 +507,7 @@ def database_explorer():
 # Generic Table Viewer
 # -----------------------------------------------------------
 @app.route("/table/<table_name>")
+@login_required
 def table_view(table_name):
     """
     =========================================================
@@ -439,8 +537,8 @@ def table_view(table_name):
     # -------------------------------------------------------
     # Ensure the user is authenticated.
     # -------------------------------------------------------
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    #if "user_id" not in session:
+    #    return redirect(url_for("login"))
 
     try:
 
@@ -485,6 +583,7 @@ def table_view(table_name):
     "/sql-workspace",
     methods=["GET", "POST"]
 )
+@login_required
 def sql_workspace():
     """
     ============================================================
@@ -514,8 +613,8 @@ def sql_workspace():
     # Ensure the user is authenticated.
     # ------------------------------------------------------------
 
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    #if "user_id" not in session:
+    #    return redirect(url_for("login"))
 
     # ------------------------------------------------------------
     # Load a query from the session.
@@ -596,6 +695,11 @@ def sql_workspace():
                 # Display the database error.
                 # --------------------------------------------
 
+                flash(
+                    str(error_exception),
+                    "error",
+                )
+
                 error = str(error_exception)
 
     # ------------------------------------------------------------
@@ -621,11 +725,11 @@ def sql_workspace():
 # Query History
 # -----------------------------------------------------------
 @app.route("/query-history")
+@login_required
 def query_history():
 
-    if "user_id" not in session:
-
-        return redirect(url_for("login"))
+    #if "user_id" not in session:
+    #    return redirect(url_for("login"))
 
     history = get_query_history(session["user_id"])
 
@@ -645,10 +749,16 @@ def query_history():
 # ============================================================
 
 @app.route("/saved-queries")
+@login_required
 def saved_queries():
 
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    flash(
+        "Query saved successfully.",
+        "success",
+    )
+
+    #if "user_id" not in session:
+    #    return redirect(url_for("saved_queries"))
 
     queries = get_saved_queries(
         session["user_id"]
@@ -658,6 +768,8 @@ def saved_queries():
         "saved-queries.html",
         queries=queries,
     )
+    
+    
 
 
 # ============================================================
@@ -669,10 +781,11 @@ def saved_queries():
     "/saved-query/new",
     methods=["POST"],
 )
+@login_required
 def new_saved_query():
 
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    #if "user_id" not in session:
+    #    return redirect(url_for("login"))
 
     save_query(
         session["user_id"],
@@ -694,12 +807,18 @@ def new_saved_query():
     "/saved-query/delete/<int:saved_query_id>",
     methods=["POST"],
 )
+@login_required
 def remove_saved_query(
     saved_query_id,
 ):
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    
+    flash(
+    "Saved query deleted successfully.",
+        "success",
+    )
+    
+    #if "user_id" not in session:
+    #    return redirect(url_for("remove_saved_query"))
 
     delete_saved_query(
         saved_query_id,
@@ -716,11 +835,14 @@ def remove_saved_query(
 # Run Saved Query
 # ============================================================
 
-@app.route("/saved-query/run/<int:saved_query_id>")
+@app.route(
+    "/saved-query/run/<int:saved_query_id>"
+)
+@login_required
 def run_saved_query(saved_query_id):
 
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    #if "user_id" not in session:
+    #    return redirect(url_for("login"))
 
     query = get_saved_query_by_id(
         saved_query_id,
@@ -744,10 +866,11 @@ def run_saved_query(saved_query_id):
     "/saved-query/edit/<int:saved_query_id>",
     methods=["GET", "POST"],
 )
+@login_required
 def edit_saved_query(saved_query_id):
 
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    #if "user_id" not in session:
+    #    return redirect(url_for("login"))
 
     if request.method == "POST":
 

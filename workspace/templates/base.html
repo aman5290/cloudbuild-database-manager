@@ -2,7 +2,7 @@
 
 <!--
 =============================================================
-Project : Pagila PostgreSQL Web Portal
+Project : CloudBuild Database Manager
 
 Version : 4.0.0
 
@@ -46,7 +46,7 @@ Last Updated
 
         {% block title %}
 
-        Pagila PostgreSQL Web Portal
+        CloudBuild Database Manager
 
         {% endblock %}
 
@@ -60,43 +60,170 @@ Last Updated
 
 </head>
 
+
+
+
+<script>
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    function(){
+
+        let remainingSeconds =
+            {{ session_timeout_minutes }} * 60;
+
+        const timer =
+            document.getElementById(
+                "countdown"
+            );
+
+        if(!timer){
+
+            return;
+
+        }
+
+        const timerInterval =
+            setInterval(updateTimer,1000);
+
+        function updateTimer(){
+
+            const minutes =
+                Math.floor(
+                    remainingSeconds / 60
+                );
+
+            const seconds =
+                remainingSeconds % 60;
+
+            timer.textContent =
+                minutes.toString().padStart(2,"0")
+                +
+                ":"
+                +
+                seconds.toString().padStart(2,"0");
+
+            if(remainingSeconds <= 0){
+
+                clearInterval(
+                    timerInterval
+                );
+
+                window.location =
+                    "/logout";
+
+                return;
+
+            }
+
+            remainingSeconds--;
+
+        }
+
+        updateTimer();
+
+    }
+
+);
+
+</script>
+
+
+
+
+
+
 <body>
 
+
+
+
+
 <!-- ==========================================================
-     Navigation Bar
-     ----------------------------------------------------------
-     Purpose:
-     Provides a common navigation menu across the application.
+     Application Header
+=========================================================== -->
 
-     Future Scope:
-     - Role-based menu items
-     - User profile
-     - Notifications
-     ========================================================== -->
+<header class="app-header">
 
-<nav class="navbar">
+    <!-- ======================================================
+         Branding
+    ======================================================= -->
 
-    <div class="navbar-title">
+    <div class="app-brand">
 
-        CloudBuild Database Manager
+        <h1>
 
-    </div>
+            {{ app_name }}
 
-    <div class="navbar-links">
+        </h1>
 
-        <a href="/dashboard">Dashboard</a>
+        <p>
 
-        <a href="/actors">Actors</a>
+            PostgreSQL Sample Database
 
-        <a href="/database-explorer">Database Explorer</a>
-
-        <a href="/sql-workspace">SQL Workspace</a>
-
-        <a href="/logout">Logout</a>
+        </p>
 
     </div>
 
-</nav>
+    <!-- ======================================================
+         Navigation
+    ======================================================= -->
+
+    {% if session.get("user_id") %}
+
+    <nav class="main-nav">
+
+        <div class="nav-links">
+
+            <a href="/dashboard">Dashboard</a>
+
+            <a href="/database-explorer">Database Explorer</a>
+
+            <a href="/sql-workspace">SQL Workspace</a>
+
+            <a href="/query-history">Query History</a>
+
+            <a href="/saved-queries">Saved Queries</a>
+
+        </div>
+
+        <div class="nav-actions">
+
+            <div class="session-badge">
+
+                ⏱
+
+                <span id="countdown">
+
+                    15:00
+
+                </span>
+
+            </div>
+
+            <a
+                href="/logout"
+                class="btn btn-secondary"
+            >
+
+                Logout
+
+            </a>
+
+        </div>
+
+    </nav>
+
+    {% endif %}
+
+</header>
+
+
+
+
+
 
 <div class="container">
 
@@ -106,11 +233,35 @@ Last Updated
 
     <h1 class="center">
 
-        Pagila PostgreSQL Web Portal
+        CloudBuild Database Manager
 
     </h1>
 
     <hr>
+    
+    <!-- ==========================================================
+     Flash Messages
+    =========================================================== -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div class="flash {{ category }}">
+
+                    {{ message }}
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+    
+    
 
     <!-- ===============================================
          Page Content
@@ -128,7 +279,9 @@ Last Updated
 
     <p class="center">
 
-        Version 4.0.0
+        {{ app_name }}
+
+        Version {{ app_version }}
 
     </p>
 

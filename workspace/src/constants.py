@@ -1,6 +1,6 @@
 """
 =============================================================
-Project : Pagila PostgreSQL Web Portal
+Project : CloudBuild Database Manager
 
 Version : 6.1.3
 
@@ -20,10 +20,10 @@ Application-wide constants.
 # ============================================================
 
 # Session timeout (minutes)
-SESSION_TIMEOUT_MINUTES = 5
+SESSION_TIMEOUT_MINUTES = 15
 
 # Application name
-APP_NAME = "Pagila PostgreSQL Web Portal"
+APP_NAME = "CloudBuild Database Manager"
 
 # Current version
-APP_VERSION = "4.0.0"
+APP_VERSION = "6.4.1"
