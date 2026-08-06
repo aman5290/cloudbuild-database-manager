@@ -58,86 +58,24 @@ Last Updated
         rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}">
 
+
+
+<link
+    rel="icon"
+    href="{{ url_for('static', filename='favicon.ico') }}">
+
+
+
+<script src="{{ url_for('static', filename='js/session_timer.js') }}"></script>
+
+
+
+
+
+
 </head>
 
-
-
-
-<script>
-
-document.addEventListener(
-
-    "DOMContentLoaded",
-
-    function(){
-
-        let remainingSeconds =
-            {{ session_timeout_minutes }} * 60;
-
-        const timer =
-            document.getElementById(
-                "countdown"
-            );
-
-        if(!timer){
-
-            return;
-
-        }
-
-        const timerInterval =
-            setInterval(updateTimer,1000);
-
-        function updateTimer(){
-
-            const minutes =
-                Math.floor(
-                    remainingSeconds / 60
-                );
-
-            const seconds =
-                remainingSeconds % 60;
-
-            timer.textContent =
-                minutes.toString().padStart(2,"0")
-                +
-                ":"
-                +
-                seconds.toString().padStart(2,"0");
-
-            if(remainingSeconds <= 0){
-
-                clearInterval(
-                    timerInterval
-                );
-
-                window.location =
-                    "/logout";
-
-                return;
-
-            }
-
-            remainingSeconds--;
-
-        }
-
-        updateTimer();
-
-    }
-
-);
-
-</script>
-
-
-
-
-
-
 <body>
-
-
 
 
 
@@ -195,10 +133,11 @@ document.addEventListener(
 
                 ⏱
 
-                <span id="countdown">
-
+                <span
+                    id="countdown"
+                    data-timeout="{{ session_timeout_minutes }}"
+                >
                     15:00
-
                 </span>
 
             </div>

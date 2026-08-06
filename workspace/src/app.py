@@ -1,8 +1,7 @@
 """
 =============================================================
-Project : Pagila PostgreSQL Web Portal
-
-Version : 6.1.3
+Project : CloudBuild Database Manager
+Version : 6.6.0-alpha1
 
 File    : app.py
 
@@ -29,7 +28,13 @@ Last Updated
 # Standard Library Imports
 # ============================================================
 
-from datetime import datetime, timedelta, timezone
+from src.utils.search import filter_items
+
+from datetime import (
+    datetime,
+    timedelta,
+    timezone
+)
 
 from pathlib import Path
 
@@ -48,6 +53,11 @@ from flask import (
 )
 
 
+
+# ============================================================
+# Project Imports
+# ============================================================
+
 from src.constants import (
     APP_NAME,
     APP_VERSION,
@@ -55,9 +65,6 @@ from src.constants import (
 )
 
 
-# ============================================================
-# Project Imports
-# ============================================================
 
 from src.database.db import (
 #    get_actor_by_id,
@@ -77,9 +84,12 @@ from src.database.db import (
     delete_saved_query
 )
 
-from src.utils.auth import login_required
+from src.utils.auth import (
+    login_required,
+    verify_password
+)
 
-from src.utils.password import verify_password
+from src.routes import register_blueprints
 
 
 # ============================================================
@@ -99,6 +109,16 @@ app = Flask(
     template_folder=BASE_DIR / "templates",
     static_folder=BASE_DIR / "static"
 )
+
+
+
+
+# -----------------------------------------------------------
+# Register Application Blueprints
+# -----------------------------------------------------------
+
+register_blueprints(app)
+
 
 
 
@@ -164,7 +184,7 @@ def home():
     """
 
     return redirect(
-        url_for("login")
+        url_for("auth.login")
     )
 
 
@@ -209,260 +229,8 @@ def home():
 
 
 
-# ============================================================
-# Authentication Routes
-# ============================================================
-
-# -----------------------------------------------------------
-# Login Page
-# -----------------------------------------------------------
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    """
-    Purpose
-    -------
-    Display the login page and authenticate users.
-
-    URL
-    ---
-    /login
-
-    HTTP Methods
-    ------------
-    GET
-        Display login form.
-
-    POST
-        Validate username and password.
-
-    Future Scope
-    ------------
-    - Flask Session
-    - Remember Me
-    - MFA
-    """
-
-    # -----------------------------------------------------------
-    # Display Login Page
-    # -----------------------------------------------------------
-    #
-    # If this is a GET request, simply display
-    # the login page.
-    #
-    if request.method == "GET":
-
-        # Read any message passed through the URL.
-        message = request.args.get("message")
-
-        return render_template(
-            "login.html",
-            message=message
-        )
-
-    # -----------------------------------------------------------
-    # Process Login Request (POST)
-    # -----------------------------------------------------------
-    #
-    # If execution reaches here, the request
-    # method is POST and we must authenticate
-    # the user.
-    #
-
-    # Read values entered by the user.
-    username = request.form.get("username")
-    password = request.form.get("password")
-
-    # Retrieve the user from PostgreSQL.
-    user = get_user_by_username(username)
-
-    # User does not exist.
-    if user is None:
-        return render_template(
-            "login.html",
-            error="Invalid username or password."
-        )
-
-    # Password stored in database.
-    stored_hash = user[2]
-
-    # Verify bcrypt password.
-    if not verify_password(password, stored_hash):
-        return render_template(
-            "login.html",
-            error="Invalid username or password."
-        )
-
-    # -----------------------------------------------------------
-    # Login Successful
-    # -----------------------------------------------------------
-    #
-    # Create a new authenticated session.
-    #
-    # Only store the minimum information required by the
-    # application. Never store passwords or password hashes
-    # inside the session.
-    # -----------------------------------------------------------
-
-    # Clear any previous session data.
-    session.clear()
-
-    # Mark this as a permanent session.
-    session.permanent = True
-
-    # -----------------------------------------------------------
-    # Store authenticated user information.
-    #
-    # get_user_by_username() returns a tuple:
-    #
-    # user[0] -> user_id
-    # user[1] -> username
-    # user[2] -> password_hash
-    # -----------------------------------------------------------
-
-    session["user_id"] = user[0]
-
-    session["username"] = user[1]
-
-    # -----------------------------------------------------------
-    # Store the login timestamp.
-    #
-    # This will later be used for session timeout handling
-    # and activity tracking.
-    # -----------------------------------------------------------
-
-    session["last_activity"] = datetime.now(
-        timezone.utc
-    ).isoformat()
-
-    # -----------------------------------------------------------
-    # Display success message.
-    # -----------------------------------------------------------
-
-    flash(
-
-        "Login successful.",
-
-        "success",
-
-    )
-
-    # -----------------------------------------------------------
-    # Redirect the user to the Dashboard.
-    # -----------------------------------------------------------
-
-    return redirect(
-
-        url_for("dashboard")
-
-    )
 
 
-# ============================================================
-# Dashboard
-# ============================================================
-
-# -----------------------------------------------------------
-# Dashboard
-# -----------------------------------------------------------
-@app.route("/dashboard")
-@login_required
-def dashboard():
-    """
-    =========================================================
-    Purpose
-    ---------------------------------------------------------
-    Display the Dashboard.
-
-    Access
-    ---------------------------------------------------------
-    Authenticated users only.
-
-    Future Scope
-    ---------------------------------------------------------
-    - Database statistics
-    - Recent activity
-    - Quick navigation
-    =========================================================
-    """
-
-    # Check whether the user is logged in.
-    #if "user_id" not in session:
-    #    return redirect(url_for("login"))
-    
-    
-    return render_template(
-        "dashboard.html"
-    )
-
-
-    # Retrieve the last recorded activity time.
-    last_activity = datetime.fromisoformat(
-        session["last_activity"]
-    )
-
-    # Calculate inactivity duration.
-    if datetime.now(timezone.utc) - last_activity > SESSION_TIMEOUT:
-
-        # Session has expired.
-        session.clear()
-
-        return redirect(url_for("login"))
-
-    # Update the user's last activity time in UTC.
-    session["last_activity"] = datetime.now(timezone.utc).isoformat()
-    
-
-    return render_template(
-        "dashboard.html",
-        full_name=session["full_name"]
-    )
-
-
-# -----------------------------------------------------------
-# Logout
-# -----------------------------------------------------------
-@app.route("/logout")
-def logout():
-    """
-    =========================================================
-    Purpose
-    ---------------------------------------------------------
-    End the current user session.
-
-    URL
-    ---------------------------------------------------------
-    /logout
-
-    Access
-    ---------------------------------------------------------
-    Logged-in users.
-
-    Future Scope
-    ---------------------------------------------------------
-    - Audit logout time
-    - Record logout IP
-    =========================================================
-    """
-    
-    # Remove all session data.
-    session.clear()
-    
-    # Redirect user to the Login page with
-    # a confirmation message.
-    flash(
-        "You have been logged out.",
-        "info"
-    )
-
-    return redirect(
-        url_for("login")
-    )
-
-
-
-# ============================================================
-# Database Explorer
-# ============================================================
 
 # -----------------------------------------------------------
 # Database Explorer
@@ -479,25 +247,64 @@ def database_explorer():
     Responsibilities
     ---------------------------------------------------------
     1. Read table names from PostgreSQL.
-    2. Display them in the browser.
+    2. Filter tables using the search text.
+    3. Display matching tables in the browser.
 
     Future Scope
     ---------------------------------------------------------
     - Display table icons
     - Display row counts
-    - Search tables
+    - Table statistics
+    - Pagination
     =========================================================
     """
 
-    # Ensure the user is authenticated.
-    #if "user_id" not in session:
-    #    return redirect(url_for("login"))
+    # -------------------------------------------------------
+    # Read search text from the URL.
+    #
+    # Example:
+    # /database-explorer?search=film
+    # -------------------------------------------------------
+
+    search = request.args.get(
+        "search",
+        ""
+    ).strip()
+
+    # -------------------------------------------------------
+    # Retrieve all database tables.
+    # -------------------------------------------------------
 
     tables = get_database_tables()
 
+    # -------------------------------------------------------
+    # Apply search filter.
+    #
+    # If the search text is empty, all tables will
+    # be displayed.
+    # -------------------------------------------------------
+
+    tables = filter_items(
+        tables,
+        search
+    )
+
+    # -------------------------------------------------------
+    # Render Database Explorer.
+    # -------------------------------------------------------
+
     return render_template(
+
         "database-explorer.html",
-        tables=tables
+
+        tables=tables,
+
+        search=search,
+        
+        search_title="Search Tables",
+
+        search_placeholder="Search table name..."
+
     )
 
 
@@ -538,7 +345,7 @@ def table_view(table_name):
     # Ensure the user is authenticated.
     # -------------------------------------------------------
     #if "user_id" not in session:
-    #    return redirect(url_for("login"))
+    #    return redirect(url_for("auth.login"))
 
     try:
 
@@ -614,7 +421,7 @@ def sql_workspace():
     # ------------------------------------------------------------
 
     #if "user_id" not in session:
-    #    return redirect(url_for("login"))
+    #    return redirect(url_for("auth.login"))
 
     # ------------------------------------------------------------
     # Load a query from the session.
@@ -720,24 +527,94 @@ def sql_workspace():
 
 
     
-    
-# -----------------------------------------------------------
+
+# ============================================================
 # Query History
-# -----------------------------------------------------------
+# ============================================================
+
 @app.route("/query-history")
 @login_required
 def query_history():
+    """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    Display the SQL Query History for the current user.
 
-    #if "user_id" not in session:
-    #    return redirect(url_for("login"))
+    Responsibilities
+    ---------------------------------------------------------
+    1. Retrieve the user's query history.
+    2. Filter history using the search text.
+    3. Display matching records.
 
-    history = get_query_history(session["user_id"])
+    Future Scope
+    ---------------------------------------------------------
+    - Pagination
+    - Sort by execution time
+    - Sort by execution date
+    - Filter by execution status
+    =========================================================
+    """
+
+    # -------------------------------------------------------
+    # Read search text from the URL.
+    #
+    # Example:
+    # /query-history?search=film
+    # -------------------------------------------------------
+
+    search = request.args.get(
+        "search",
+        ""
+    ).strip()
+
+    # -------------------------------------------------------
+    # Retrieve query history.
+    # -------------------------------------------------------
+
+    history = get_query_history(
+        session["user_id"]
+    )
+
+    # -------------------------------------------------------
+    # Apply search filter.
+    #
+    # History tuple
+    #
+    # history[0] -> History ID
+    # history[1] -> SQL Query
+    # history[2] -> Rows Returned
+    # history[3] -> Execution Time
+    # history[4] -> Executed At
+    #
+    # Adjust the index below if your tuple structure differs.
+    # -------------------------------------------------------
+
+    history = filter_items(
+
+        history,
+
+        search,
+
+        key=lambda row: row[1]
+
+    )
+
+    # -------------------------------------------------------
+    # Render Query History.
+    # -------------------------------------------------------
 
     return render_template(
 
         "query-history.html",
 
-        history=history
+        history=history,
+
+        search=search,
+
+        search_title="Search Query History",
+
+        search_placeholder="Search SQL query..."
 
     )
 
@@ -751,22 +628,83 @@ def query_history():
 @app.route("/saved-queries")
 @login_required
 def saved_queries():
+    """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    Display all saved SQL queries for the current user.
 
-    flash(
-        "Query saved successfully.",
-        "success",
-    )
+    Responsibilities
+    ---------------------------------------------------------
+    1. Read saved queries from PostgreSQL.
+    2. Filter queries using the search text.
+    3. Display matching saved queries.
 
-    #if "user_id" not in session:
-    #    return redirect(url_for("saved_queries"))
+    Future Scope
+    ---------------------------------------------------------
+    - Pagination
+    - Sort by name
+    - Sort by last updated
+    - Search by SQL text
+    =========================================================
+    """
+
+    # -------------------------------------------------------
+    # Read search text from the URL.
+    #
+    # Example:
+    # /saved-queries?search=film
+    # -------------------------------------------------------
+
+    search = request.args.get(
+        "search",
+        ""
+    ).strip()
+
+    # -------------------------------------------------------
+    # Retrieve saved queries.
+    # -------------------------------------------------------
 
     queries = get_saved_queries(
         session["user_id"]
     )
 
+    # -------------------------------------------------------
+    # Filter by query name.
+    #
+    # Query tuple:
+    #
+    # query[0] -> ID
+    # query[1] -> Query Name
+    # query[2] -> SQL Text
+    # -------------------------------------------------------
+
+    queries = filter_items(
+
+        queries,
+
+        search,
+
+        key=lambda query: query[1]
+
+    )
+
+    # -------------------------------------------------------
+    # Render page.
+    # -------------------------------------------------------
+
     return render_template(
+
         "saved-queries.html",
+
         queries=queries,
+
+        search=search,
+        
+        search_title="Search Saved Queries",
+
+        search_placeholder="Search query name..."
+
     )
     
     
@@ -783,9 +721,14 @@ def saved_queries():
 )
 @login_required
 def new_saved_query():
+    
+    flash(
+    "Query saved successfully.",
+        "success",
+    )
 
     #if "user_id" not in session:
-    #    return redirect(url_for("login"))
+    #    return redirect(url_for("auth.login"))
 
     save_query(
         session["user_id"],
@@ -842,7 +785,7 @@ def remove_saved_query(
 def run_saved_query(saved_query_id):
 
     #if "user_id" not in session:
-    #    return redirect(url_for("login"))
+    #    return redirect(url_for("auth.login"))
 
     query = get_saved_query_by_id(
         saved_query_id,
@@ -870,7 +813,7 @@ def run_saved_query(saved_query_id):
 def edit_saved_query(saved_query_id):
 
     #if "user_id" not in session:
-    #    return redirect(url_for("login"))
+    #    return redirect(url_for("auth.login"))
 
     if request.method == "POST":
 

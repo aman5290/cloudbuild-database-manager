@@ -175,7 +175,7 @@ def get_database_tables():
     Returns
     ---------------------------------------------------------
     list
-        A list containing table names.
+        A list of table names.
 
     Notes
     ---------------------------------------------------------
@@ -189,18 +189,51 @@ def get_database_tables():
     =========================================================
     """
 
+    # --------------------------------------------------------
+    # Open database connection.
+    # --------------------------------------------------------
+
     with get_connection() as conn:
+
         with conn.cursor() as cur:
 
-            cur.execute("""
+            # ------------------------------------------------
+            # Retrieve table names.
+            # ------------------------------------------------
+
+            cur.execute(
+                """
                 SELECT
                     table_name
                 FROM information_schema.tables
                 WHERE table_schema = 'public'
                 ORDER BY table_name;
-            """)
+                """
+            )
 
-            return cur.fetchall()
+            rows = cur.fetchall()
+
+    # --------------------------------------------------------
+    # Convert database tuples into a simple Python list.
+    #
+    # Example:
+    #
+    # Database:
+    #     ("actor",)
+    #
+    # Python:
+    #     "actor"
+    # --------------------------------------------------------
+
+    tables = [
+
+        row[0]
+
+        for row in rows
+
+    ]
+
+    return tables
 
 
 

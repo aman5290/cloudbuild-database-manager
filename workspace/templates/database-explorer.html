@@ -8,6 +8,8 @@ Database Explorer
 
 <h2>Database Explorer</h2>
 
+{% include "components/search_bar.html" %}
+
 <p>
 Select a table to view its contents.
 </p>
@@ -33,9 +35,9 @@ Select a table to view its contents.
 
     <a
         class="table-card"
-        href="/table/{{ table[0] }}">
+        href="/table/{{ table }}">
 
-        📄 {{ table[0] }}
+        📄 {{ table }}
 
     </a>
 

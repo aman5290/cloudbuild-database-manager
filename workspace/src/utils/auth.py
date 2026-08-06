@@ -12,6 +12,8 @@ Reusable authentication helpers and decorators.
 Current Features
 ----------------
 ✓ Login required decorator
+✓ Password hashing
+✓ Password verification
 
 Future Scope
 ------------
@@ -25,17 +27,53 @@ Future Scope
 
 from functools import wraps
 
+import bcrypt
+
 from flask import (
-
     flash,
-
     redirect,
-
     session,
-
     url_for,
-
 )
+
+
+# ============================================================
+# Hash Password
+# ============================================================
+
+def hash_password(password):
+    """
+    Generate a bcrypt hash for a password.
+    """
+
+    return bcrypt.hashpw(
+
+        password.encode("utf-8"),
+
+        bcrypt.gensalt()
+
+    ).decode("utf-8")
+
+
+# ============================================================
+# Verify Password
+# ============================================================
+
+def verify_password(
+    password,
+    password_hash,
+):
+    """
+    Verify a password against a bcrypt hash.
+    """
+
+    return bcrypt.checkpw(
+
+        password.encode("utf-8"),
+
+        password_hash.encode("utf-8")
+
+    )
 
 
 # ============================================================
@@ -45,27 +83,10 @@ from flask import (
 def login_required(view):
     """
     Ensure that the current user is authenticated.
-
-    If the session does not contain a logged-in user,
-    redirect the user to the Login page.
-
-    Parameters
-    ----------
-    view : function
-        Flask view function.
-
-    Returns
-    -------
-    function
-        Wrapped Flask view.
     """
 
     @wraps(view)
     def wrapper(*args, **kwargs):
-
-        # ----------------------------------------------------
-        # Verify that the user is logged in.
-        # ----------------------------------------------------
 
         if "user_id" not in session:
 
@@ -73,7 +94,7 @@ def login_required(view):
 
                 "Please log in to continue.",
 
-                "error"
+                "error",
 
             )
 

@@ -7,27 +7,27 @@ Dashboard
 {% block content %}
 
 <h2 class="center">
-Welcome {{ full_name }}
+Welcome {{ session.username.title() }}
 </h2>
 
-<p class="center">
-Authentication Successful
-</p>
+
 
 <br>
 
 <div class="center">
 
 <a href="/query-history">
-
+<button>
 Query History
-
+</button>
 </a>
 
 &nbsp;&nbsp;
 
 <a href="/saved-queries">
+<button>
     Saved Queries
+</button>
 </a>
 
 &nbsp;&nbsp;

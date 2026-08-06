@@ -565,3 +565,55 @@ a {
 
 
 
+/* ==========================================================
+   Search Form
+========================================================== */
+
+.search-form{
+
+    display:flex;
+
+    gap:10px;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+.search-form input{
+
+    width:320px;
+
+    padding:10px;
+
+    border:1px solid #cccccc;
+
+    border-radius:4px;
+
+}
+
+
+
+/* ==========================================================
+   Search Container
+========================================================== */
+
+.search-container{
+
+    margin-bottom:20px;
+
+}
+
+.search-container h3{
+
+    margin-bottom:10px;
+
+    color:#2f4154;
+
+}
+
+
+
+
+
