@@ -12,6 +12,10 @@ Contains login and logout routes.
 ============================================================
 """
 
+# ============================================================
+# Imports
+# ============================================================
+
 from datetime import (
     datetime,
     timezone,
@@ -35,13 +39,6 @@ from src.utils.auth import (
     verify_password,
 )
 
-
-from src.services.auth_service import (
-    authenticate_user,
-    create_user_session,
-)
-
-
 # ============================================================
 # Blueprint
 # ============================================================
@@ -54,21 +51,34 @@ auth_bp = Blueprint(
 
 )
 
-
 # ============================================================
 # Login
 # ============================================================
 
 @auth_bp.route(
-
     "/login",
-
-    methods=["GET", "POST"]
-
+    methods=["GET", "POST"],
 )
 def login():
     """
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
     Display the Login page and authenticate users.
+
+    URL
+    ---------------------------------------------------------
+    /login
+
+    HTTP Methods
+    ---------------------------------------------------------
+    GET
+        Display Login page.
+
+    POST
+        Authenticate the user.
+
+    =========================================================
     """
 
     # -------------------------------------------------------
@@ -81,7 +91,7 @@ def login():
 
             "login.html",
 
-            message=request.args.get("message")
+            message=request.args.get("message"),
 
         )
 
@@ -105,31 +115,69 @@ def login():
     # Retrieve user.
     # -------------------------------------------------------
 
-    success, user, error = authenticate_user(
+    user = get_user_by_username(
 
-        username,
-
-        password,
+        username
 
     )
 
-    if not success:
+    # -------------------------------------------------------
+    # User not found.
+    # -------------------------------------------------------
+
+    if user is None:
 
         return render_template(
 
             "login.html",
 
-            error=error,
+            error="Invalid username or password.",
 
         )
 
-    create_user_session(
+    # -------------------------------------------------------
+    # Verify password.
+    # -------------------------------------------------------
 
-        session,
+    stored_hash = user[2]
 
-    user,
+    if not verify_password(
 
-    )
+        password,
+
+        stored_hash,
+
+    ):
+
+        return render_template(
+
+            "login.html",
+
+            error="Invalid username or password.",
+
+        )
+
+    # -------------------------------------------------------
+    # Create authenticated session.
+    # -------------------------------------------------------
+
+    session.clear()
+
+    session.permanent = True
+
+    session["user_id"] = user[0]
+
+    session["username"] = user[1]
+
+    session["last_activity"] = datetime.now(
+
+        timezone.utc
+
+    ).isoformat()
+
+    # -------------------------------------------------------
+    # Success message.
+    # -------------------------------------------------------
 
     flash(
 
@@ -138,6 +186,10 @@ def login():
         "success",
 
     )
+
+    # -------------------------------------------------------
+    # Redirect to Dashboard.
+    # -------------------------------------------------------
 
     return redirect(
 
@@ -151,13 +203,15 @@ def login():
 # ============================================================
 
 @auth_bp.route(
-
     "/logout"
-
 )
 def logout():
     """
-    End the current user session.
+    =========================================================
+    Purpose
+    ---------------------------------------------------------
+    End the current authenticated session.
+    =========================================================
     """
 
     session.clear()
