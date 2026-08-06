@@ -35,6 +35,13 @@ from src.utils.auth import (
     verify_password,
 )
 
+
+from src.services.auth_service import (
+    authenticate_user,
+    create_user_session,
+)
+
+
 # ============================================================
 # Blueprint
 # ============================================================
@@ -98,59 +105,31 @@ def login():
     # Retrieve user.
     # -------------------------------------------------------
 
-    user = get_user_by_username(
+    success, user, error = authenticate_user(
 
-        username
-
-    )
-
-    if user is None:
-
-        return render_template(
-
-            "login.html",
-
-            error="Invalid username or password."
-
-        )
-
-    # -------------------------------------------------------
-    # Verify password.
-    # -------------------------------------------------------
-
-    if not verify_password(
+        username,
 
         password,
 
-        user[2],
+    )
 
-    ):
+    if not success:
 
         return render_template(
 
             "login.html",
 
-            error="Invalid username or password."
+            error=error,
 
         )
 
-    # -------------------------------------------------------
-    # Create authenticated session.
-    # -------------------------------------------------------
+    create_user_session(
 
-    session.clear()
+        session,
 
-    session.permanent = True
+    user,
 
-    session["user_id"] = user[0]
-
-    session["username"] = user[1]
-
-    session["last_activity"] = datetime.now(
-
-        timezone.utc
-
-    ).isoformat()
+    )
 
     flash(
 
