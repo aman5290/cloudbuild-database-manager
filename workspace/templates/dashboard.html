@@ -6,37 +6,67 @@ Dashboard
 
 {% block content %}
 
-<h2 class="center">
-Welcome {{ session.username.title() }}
+<h2 class="dashboard-title">
+
+    Welcome {{ session.username.title() }} 👋
+
 </h2>
 
+<p class="dashboard-subtitle">
 
+    Choose where you would like to work.
 
-<br>
+</p>
 
-<div class="center">
+<div class="dashboard-grid">
 
-<a href="/query-history">
-<button>
-Query History
-</button>
-</a>
+    <a href="/database-explorer" class="dashboard-card">
 
-&nbsp;&nbsp;
+        <div class="card-icon">🗄</div>
 
-<a href="/saved-queries">
-<button>
-    Saved Queries
-</button>
-</a>
+        <h3>Database Explorer</h3>
 
-&nbsp;&nbsp;
+        <p>
+            Browse tables, columns and database objects.
+        </p>
 
-<a href="/logout">
-    <button>
-        Logout
-    </button>
-</a>
+    </a>
+
+    <a href="/sql-workspace" class="dashboard-card">
+
+        <div class="card-icon">💻</div>
+
+        <h3>SQL Workspace</h3>
+
+        <p>
+            Execute SQL queries against PostgreSQL.
+        </p>
+
+    </a>
+
+    <a href="/saved-queries" class="dashboard-card">
+
+        <div class="card-icon">⭐</div>
+
+        <h3>Saved Queries</h3>
+
+        <p>
+            Manage reusable SQL queries.
+        </p>
+
+    </a>
+
+    <a href="/query-history" class="dashboard-card">
+
+        <div class="card-icon">🕘</div>
+
+        <h3>Query History</h3>
+
+        <p>
+            View previously executed SQL statements.
+        </p>
+
+    </a>
 
 </div>
 

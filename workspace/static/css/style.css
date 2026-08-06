@@ -617,3 +617,508 @@ a {
 
 
 
+/* ==========================================================
+   Dashboard
+========================================================== */
+
+.dashboard-title{
+
+    text-align:center;
+
+    margin-top:10px;
+
+    color:#2f4154;
+
+    font-size:32px;
+
+}
+
+.dashboard-subtitle{
+
+    text-align:center;
+
+    color:#666;
+
+    margin-bottom:35px;
+
+}
+
+/* ==========================================================
+   Dashboard Grid
+========================================================== */
+
+.dashboard-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+
+    gap:25px;
+
+    margin-top:30px;
+
+}
+
+/* ==========================================================
+   Dashboard Card
+========================================================== */
+
+.dashboard-card{
+
+    display:block;
+
+    background:white;
+
+    border:1px solid #d9d9d9;
+
+    border-radius:10px;
+
+    padding:28px;
+
+    text-decoration:none;
+
+    color:#2f4154;
+
+    transition:.25s;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+
+}
+
+.dashboard-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 8px 22px rgba(0,0,0,.15);
+
+    border-color:#1976d2;
+
+}
+
+.card-icon{
+
+    font-size:42px;
+
+    margin-bottom:18px;
+
+}
+
+.dashboard-card h3{
+
+    margin-bottom:12px;
+
+}
+
+.dashboard-card p{
+
+    color:#666;
+
+    line-height:1.5;
+
+}
+
+
+
+
+
+/* ==========================================================
+   Logged-in User
+========================================================== */
+
+.welcome-user{
+
+    color:white;
+
+    font-weight:600;
+
+    font-size:14px;
+
+    white-space:nowrap;
+
+}
+
+
+/* ==========================================================
+   Navigation Icons
+========================================================== */
+
+.nav-links a{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    transition:.2s;
+
+}
+
+
+
+
+/* ==========================================================
+   SQL Workspace
+========================================================== */
+
+.workspace-toolbar{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+    flex-wrap:wrap;
+
+}
+
+.sql-editor{
+
+    width:100%;
+
+    min-height:320px;
+
+    padding:16px;
+
+    font-family:Consolas,monospace;
+
+    font-size:15px;
+
+    border:1px solid #cfcfcf;
+
+    border-radius:8px;
+
+    resize:vertical;
+
+    background:#fcfcfc;
+
+}
+
+.sql-editor:focus{
+
+    outline:none;
+
+    border-color:#1976d2;
+
+    box-shadow:0 0 0 3px rgba(25,118,210,.15);
+
+}
+
+.summary-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+
+    margin:25px 0;
+
+}
+
+.summary-card{
+
+    background:white;
+
+    border:1px solid #ddd;
+
+    border-radius:10px;
+
+    padding:20px;
+
+    text-align:center;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+}
+
+.summary-card h4{
+
+    margin:0 0 12px;
+
+    color:#2f4154;
+
+}
+
+.summary-card span{
+
+    font-size:28px;
+
+    font-weight:bold;
+
+    color:#1976d2;
+
+}
+
+.CodeMirror{
+
+    height:450px;
+
+    border:1px solid #d5d5d5;
+
+    border-radius:8px;
+
+    font-size:15px;
+
+}
+
+
+
+
+/* ==========================================================
+   Editor Status Bar
+========================================================== */
+
+.editor-status-bar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:8px;
+
+    padding:10px 15px;
+
+    background:#f8f9fa;
+
+    border:1px solid #dcdcdc;
+
+    border-top:none;
+
+    border-radius:0 0 8px 8px;
+
+    font-size:13px;
+
+    color:#555;
+
+}
+
+.editor-status-bar strong{
+
+    color:#1976d2;
+
+}
+
+
+
+
+
+
+/* ==========================================================
+   Full Screen Editor
+========================================================== */
+
+#editor-wrapper.editor-fullscreen{
+
+    position:fixed;
+
+    inset:0;
+
+    width:100vw;
+
+    height:100vh;
+
+    background:#ffffff;
+
+    z-index:99999;
+
+    padding:20px;
+
+    box-sizing:border-box;
+
+}
+
+#editor-wrapper.editor-fullscreen #editor{
+
+    height:calc(100vh - 40px);
+
+}
+
+#editor-wrapper.editor-fullscreen .CodeMirror{
+
+    height:100% !important;
+
+    font-size:16px;
+
+}
+
+
+
+
+
+
+
+/* ==========================================================
+   Result Table
+========================================================== */
+
+.result-table-wrapper{
+
+    margin-top:20px;
+
+    border:1px solid #dcdcdc;
+
+    border-radius:8px;
+
+    overflow:auto;
+
+    max-height:500px;
+
+    background:white;
+
+}
+
+.result-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    font-size:14px;
+
+}
+
+.result-table thead{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:2;
+
+}
+
+.result-table th{
+
+    background:#2f4154;
+
+    color:white;
+
+    padding:12px;
+
+    white-space:nowrap;
+
+}
+
+.result-table td{
+
+    padding:10px 12px;
+
+    border-bottom:1px solid #ececec;
+
+    white-space:nowrap;
+
+}
+
+.result-table tbody tr:nth-child(even){
+
+    background:#fafafa;
+
+}
+
+.result-table tbody tr:hover{
+
+    background:#eef5ff;
+
+}
+
+
+/* ==========================================================
+   SQL Workspace Header
+========================================================== */
+
+
+.workspace-header{
+
+    margin-bottom:25px;
+
+}
+
+.workspace-header h2{
+
+    margin-bottom:6px;
+
+    color:#2f4154;
+
+}
+
+.workspace-header p{
+
+    color:#666;
+
+}
+
+
+
+
+
+/* ==========================================================
+   Recent Queries
+========================================================== */
+
+.recent-query-section{
+
+    margin-top:40px;
+
+}
+
+.recent-query-list{
+
+    border:1px solid #ddd;
+
+    border-radius:8px;
+
+    overflow:hidden;
+
+}
+
+.recent-query-item{
+
+    padding:14px 18px;
+
+    border-bottom:1px solid #ececec;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.recent-query-item:last-child{
+
+    border-bottom:none;
+
+}
+
+.recent-query-item:hover{
+
+    background:#eef5ff;
+
+}
+
+.recent-query-sql{
+
+    font-family:Consolas,monospace;
+
+    font-size:14px;
+
+}
+
+.recent-query-time{
+
+    margin-top:5px;
+
+    color:#888;
+
+    font-size:12px;
+
+}
+
+
+
+
+
+

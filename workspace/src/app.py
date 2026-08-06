@@ -64,6 +64,14 @@ from src.constants import (
 from src.routes import register_blueprints
 
 
+from src.config import (
+    FLASK_SECRET_KEY,
+    APP_NAME,
+    APP_FULL_NAME,
+    APP_VERSION,
+    ENVIRONMENT,
+    SESSION_TIMEOUT_MINUTES,
+)
 
 
 
@@ -109,9 +117,11 @@ def inject_app_info():
 
     return {
 
-        "app_name": APP_NAME,
+        "app_name": APP_FULL_NAME,
 
         "app_version": APP_VERSION,
+
+        "environment": ENVIRONMENT,
 
         "session_timeout_minutes": int(
             SESSION_TIMEOUT.total_seconds() / 60

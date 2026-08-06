@@ -68,12 +68,19 @@ Last Updated
 
 <script src="{{ url_for('static', filename='js/session_timer.js') }}"></script>
 
-
-
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css">
 
 
 
 </head>
+
+
+
+{% block scripts %}
+{% endblock %}
+
+
 
 <body>
 
@@ -115,15 +122,25 @@ Last Updated
 
         <div class="nav-links">
 
-            <a href="/dashboard">Dashboard</a>
+            <a href="{{ url_for('dashboard.dashboard') }}">
+                🏠 Dashboard
+            </a>
 
-            <a href="/database-explorer">Database Explorer</a>
+            <a href="{{ url_for('database.database_explorer') }}">
+                🗄 Database Explorer
+            </a>
 
-            <a href="/sql-workspace">SQL Workspace</a>
+            <a href="{{ url_for('workspace.sql_workspace') }}">
+                💻 SQL Workspace
+            </a>
 
-            <a href="/query-history">Query History</a>
+            <a href="{{ url_for('saved_queries.saved_queries') }}">
+                ⭐ Saved Queries
+            </a>
 
-            <a href="/saved-queries">Saved Queries</a>
+            <a href="{{ url_for('history.query_history') }}">
+                🕘 Query History
+            </a>
 
         </div>
 
@@ -139,6 +156,12 @@ Last Updated
                 >
                     15:00
                 </span>
+
+            </div>
+            
+            <div class="welcome-user">
+
+                Welcome {{ session.username.title() }}
 
             </div>
 
@@ -225,6 +248,17 @@ Last Updated
     </p>
 
 </div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sql-formatter@15.3.0/dist/sql-formatter.min.js"></script>
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
 
 </body>
 

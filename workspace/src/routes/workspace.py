@@ -2,18 +2,29 @@ from flask import (
     Blueprint,
     render_template,
     request,
-    session,
     flash,
+    redirect,
+    url_for,
+    Response,
+    session
 )
+
+
 
 from src.database.db import (
     execute_select_query,
     save_query_history,
+    get_query_history,
 )
+
+
 
 from src.utils.auth import (
     login_required,
 )
+
+
+
 
 workspace_bp = Blueprint(
     "workspace",
@@ -119,6 +130,38 @@ def sql_workspace():
 
                 result = execute_select_query(query)
 
+                if result is None:
+
+                    flash(
+
+                        "Unable to execute query.",
+
+                        "danger",
+
+                    )
+
+                    return redirect(
+
+                        url_for("workspace.sql_workspace")
+
+                    )
+
+                if "error" in result:
+
+                    flash(
+
+                        result["error"],
+
+                        "danger",
+
+                    )
+
+                    return redirect(
+
+                        url_for("workspace.sql_workspace")
+
+                    )
+
                 # ------------------------------------------------
                 # Automatically save successful queries to
                 # Query History.
@@ -161,7 +204,62 @@ def sql_workspace():
 
         result=result,
 
-        error=error
+        error=error,
+
+        recent_queries=get_query_history(
+            session["user_id"]
+        )[:10],
 
     )
 
+
+
+
+
+
+@workspace_bp.route(
+    "/export/csv",
+    methods=["POST"],
+)
+@login_required
+def export_csv():
+
+    query = request.form.get("query")
+
+    result = execute_select_query(query)
+
+    if "error" in result:
+
+        flash(result["error"], "danger")
+
+        return redirect(
+            url_for("workspace.sql_workspace")
+        )
+
+    import csv
+    import io
+
+    output = io.StringIO()
+
+    writer = csv.writer(output)
+
+    writer.writerow(result["columns"])
+
+    writer.writerows(result["rows"])
+
+    output.seek(0)
+
+    return Response(
+
+        output.getvalue(),
+
+        mimetype="text/csv",
+
+        headers={
+
+            "Content-Disposition":
+                "attachment; filename=query_results.csv"
+
+        }
+
+    )

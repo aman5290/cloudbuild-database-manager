@@ -26,4 +26,4 @@ SESSION_TIMEOUT_MINUTES = 15
 APP_NAME = "CloudBuild Database Manager"
 
 # Current version
-APP_VERSION = "7.0.0"
+APP_VERSION = "8.0.0"

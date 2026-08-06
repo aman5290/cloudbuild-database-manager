@@ -61,3 +61,34 @@ DB_CONFIG = {
 # Never hardcode this value in production.
 #
 FLASK_SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
+
+
+
+
+# ============================================================
+# Application Information
+# ============================================================
+
+APP_NAME = "CloudBuild"
+
+APP_FULL_NAME = "CloudBuild Database Manager"
+
+APP_VERSION = "8.0.0"
+
+ENVIRONMENT = "Development"
+
+# ============================================================
+# User Interface
+# ============================================================
+
+ROWS_PER_PAGE = 100
+
+SQL_MAX_ROWS = 1000
+
+DEFAULT_THEME = "Light"
+
+# ============================================================
+# Session Configuration
+# ============================================================
+
+SESSION_TIMEOUT_MINUTES = 15

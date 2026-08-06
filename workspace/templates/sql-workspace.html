@@ -29,17 +29,19 @@ SQL Workspace
      - Saved Query Execution
 =========================================================== -->
 
-<h2>
+<div class="workspace-header">
 
-SQL Workspace
+    <div>
 
-</h2>
+        <h2>SQL Workspace</h2>
 
-<p>
+        <p>
+            Execute read-only SQL queries against PostgreSQL.
+        </p>
 
-Write a SQL query below.
+    </div>
 
-</p>
+</div>
 
 <hr>
 
@@ -47,33 +49,133 @@ Write a SQL query below.
      SQL Query Form
 =========================================================== -->
 
-<form method="POST">
+<form id="query-form" method="POST">
 
-<label>
+<div class="workspace-toolbar">
 
-SQL Query
+    <button
+        class="btn btn-primary"
+        type="submit">
 
-</label>
+        ▶ Execute
 
-<br><br>
+    </button>
 
-<textarea
-    class="sql-editor"
-    name="query"
->{{ query }}</textarea>
+    <button
+        type="button"
+        class="btn btn-secondary"
+        onclick="saveQuery()">
 
-<br><br>
+        💾 Save
 
-<button
-class="btn btn-primary"
-type="submit"
->
+    </button>
 
-Execute Query
+    <button
+        type="button"
+        class="btn btn-secondary"
+        onclick="clearEditor()">
 
-</button>
+    🧹 Clear
+
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-secondary"
+        onclick="formatSQL()">
+
+        🎨 Format
+
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-secondary"
+        onclick="exportCSV()">
+
+        ⬇ Export
+
+    </button>
+    
+    <button
+        type="button"
+        class="btn btn-secondary"
+        id="theme-toggle"
+        onclick="toggleTheme()">
+
+        🌙 Dark
+
+    </button>
+
+</div>
+
+
+<div id="editor-wrapper">
+    <div id="editor-container">
+
+        <textarea
+
+            id="sql-editor"
+
+            name="query"
+
+        >{{ query }}</textarea>
+    </div>  
+</div>  
+
+<div class="editor-status-bar">
+
+    <span>
+
+        Characters:
+        <strong id="char-count">0</strong>
+
+    </span>
+
+    <span>
+
+        Lines:
+        <strong id="line-count">1</strong>
+
+    </span>
+
+    <span>
+
+        Cursor:
+        <strong id="cursor-position">1 : 1</strong>
+
+    </span>
+
+</div>      
+    
 
 </form>
+
+
+<form
+
+    id="export-form"
+
+    action="{{ url_for('workspace.export_csv') }}"
+
+    method="POST"
+
+    style="display:none;">
+
+    <input
+
+        type="hidden"
+
+        id="export-query"
+
+        name="query"
+
+        value="">
+
+</form>
+
+
+
 
 <!-- ==========================================================
      Save Query
@@ -90,9 +192,10 @@ Save Query
 </h3>
 
 <form
+    id="save-query-form"
     action="/saved-query/new"
-    method="POST"
->
+    method="POST">
+
 
 <label>
 
@@ -169,57 +272,33 @@ Execution Summary
 
 </h3>
 
-<table>
+<div class="summary-grid">
 
-<tr>
+    <div class="summary-card">
 
-<th>
+        <h4>⏱ Execution Time</h4>
 
-Execution Time
+        <span>{{ result.execution_time_ms }} ms</span>
 
-</th>
+    </div>
 
-<td>
+    <div class="summary-card">
 
-{{ result.execution_time_ms }} ms
+        <h4>📄 Rows</h4>
 
-</td>
+        <span>{{ result.row_count }}</span>
 
-</tr>
+    </div>
 
-<tr>
+    <div class="summary-card">
 
-<th>
+        <h4>🧱 Columns</h4>
 
-Rows Returned
+        <span>{{ result.column_count }}</span>
 
-</th>
+    </div>
 
-<td>
-
-{{ result.row_count }}
-
-</td>
-
-</tr>
-
-<tr>
-
-<th>
-
-Columns Returned
-
-</th>
-
-<td>
-
-{{ result.column_count }}
-
-</td>
-
-</tr>
-
-</table>
+</div>
 
 <br>
 
@@ -227,56 +306,124 @@ Columns Returned
      Result Set
 =========================================================== -->
 
-<h3>
+<h3>Results</h3>
 
-Results
+<div class="result-table-wrapper">
 
-</h3>
+<table class="result-table">
 
-<table>
+    <thead>
 
-<thead>
+        <tr>
 
-<tr>
+            {% for column in result.columns %}
 
-{% for column in result.columns %}
+            <th>{{ column }}</th>
 
-<th>
+            {% endfor %}
 
-{{ column }}
+        </tr>
 
-</th>
+    </thead>
 
-{% endfor %}
+    <tbody>
 
-</tr>
+        {% for row in result.rows %}
 
-</thead>
+        <tr>
 
-<tbody>
+            {% for value in row %}
 
-{% for row in result.rows %}
+            <td>{{ value }}</td>
 
-<tr>
+            {% endfor %}
 
-{% for value in row %}
+        </tr>
 
-<td>
+        {% endfor %}
 
-{{ value }}
-
-</td>
-
-{% endfor %}
-
-</tr>
-
-{% endfor %}
-
-</tbody>
+    </tbody>
 
 </table>
+
+</div>
+
+
+
+
+<!-- ==========================================================
+     Recent Queries
+=========================================================== -->
+
+
+<hr>
+
+<div class="recent-query-section">
+
+    <h3>
+
+        Recent Queries
+
+    </h3>
+
+    {% if recent_queries %}
+
+    <div class="recent-query-list">
+
+        {% for item in recent_queries %}
+
+        <div
+            class="recent-query-item"
+            onclick='loadRecentQuery({{ item[1] | tojson }})'>
+
+            <div class="recent-query-sql">
+
+                {{ item[1][:100] }}
+
+                {% if item[1]|length > 100 %}
+                    ...
+                {% endif %}
+
+            </div>
+
+            <div class="recent-query-time">
+
+                {{ item[4] }}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <p>No recent queries.</p>
+
+    {% endif %}
+
+</div>
+
+
+
+
 
 {% endif %}
 
 {% endblock %}
+
+
+
+{% block scripts %}
+
+<script
+    src="{{ url_for('static', filename='js/workspace.js') }}">
+</script>
+
+{% endblock %}
+
+
+
+
