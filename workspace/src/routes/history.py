@@ -5,7 +5,7 @@ from flask import (
     session,
 )
 
-from src.database.db import (
+from src.database.history_db import (
     get_query_history,
 )
 

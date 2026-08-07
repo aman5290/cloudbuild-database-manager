@@ -1,0 +1,601 @@
+/* ============================================================
+   CloudBuild
+   Database Explorer
+   Version : 9.0.0
+============================================================ */
+
+
+/* ============================================================
+   Page
+============================================================ */
+
+.explorer-page{
+
+    margin-top:20px;
+
+}
+
+.page-title{
+
+    font-size:32px;
+
+    font-weight:700;
+
+    color:#243343;
+
+    margin-bottom:6px;
+
+}
+
+.page-subtitle{
+
+    color:#6c757d;
+
+    margin-bottom:0;
+
+}
+
+
+/* ============================================================
+   Search Card
+============================================================ */
+
+.explorer-search-card{
+
+    border:none;
+
+    border-radius:12px;
+
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+
+}
+
+.explorer-search .card-body{
+
+    padding:18px;
+
+}
+
+.explorer-search .input-group{
+
+    width:100%;
+
+}
+
+.explorer-search input{
+
+    height:30px;
+    
+    width: 100%;
+
+    font-size:15px;
+
+}
+
+
+/* ============================================================
+   Sidebar
+============================================================ */
+
+.explorer-sidebar{
+
+    border:none;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+
+    min-height:700px;
+    
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.explorer-sidebar .card-header{
+
+    background:#243343;
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    padding:14px 18px;
+
+}
+
+.explorer-sidebar .card-body{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    max-height:calc(100vh - 260px);
+
+}
+
+
+
+
+
+/* ==========================================================
+   Explorer Tree
+========================================================== */
+
+.explorer-tree{
+
+    padding:0;
+
+}
+
+.tree-group{
+
+    border-bottom:1px solid #ececec;
+
+}
+
+.tree-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:12px 18px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    background:#fafafa;
+
+}
+
+.tree-header:hover{
+
+    background:#eef5ff;
+
+}
+
+.tree-toggle{
+
+    width:18px;
+
+}
+
+.tree-title{
+
+    flex:1;
+
+}
+
+.tree-count{
+
+    background:#0d6efd;
+
+    color:#fff;
+
+    min-width:28px;
+
+    text-align:center;
+
+    border-radius:20px;
+
+    padding:2px 8px;
+
+    font-size:11px;
+
+}
+
+.tree-body{
+
+    display:block;
+
+}
+
+.tree-item{
+
+    display:grid;
+
+    grid-template-columns:28px 1fr 60px;
+
+    align-items:center;
+
+    padding:8px 18px 8px 42px;
+
+    border-bottom:1px solid #ececec;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+    white-space:nowrap;
+
+
+}
+
+.tree-item:hover{
+
+    background:#eef5ff;
+
+}
+
+.tree-item.active{
+
+    background:#0d6efd;
+
+    color:white;
+
+}
+
+.tree-left{
+
+    display:contents;
+
+}
+
+.tree-right{
+
+    text-align:right;
+
+    color:#888;
+
+    font-size:12px;
+
+    font-weight:600;
+
+}
+
+.tree-item.active .tree-right{
+
+    color:white;
+
+}
+
+.tree-item span{
+
+    white-space:nowrap;
+
+}
+
+
+
+
+
+/* ============================================================
+   Details Panel
+============================================================ */
+
+.explorer-details{
+
+    border:none;
+
+    border-radius:12px;
+
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+
+    height:calc(100vh - 260px);
+
+    overflow-y:auto;
+
+}
+
+.explorer-details .card-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:15px 20px;
+
+    background:white;
+
+    border-bottom:1px solid #ececec;
+
+}
+
+.explorer-details .card-header h5{
+
+    margin:0;
+
+    font-weight:600;
+
+}
+
+.explorer-details .card-body{
+
+    padding:30px;
+
+}
+
+
+/* ============================================================
+   Placeholder
+============================================================ */
+
+.explorer-placeholder{
+
+    text-align:center;
+
+    padding:80px 20px;
+
+}
+
+.explorer-placeholder i{
+
+    font-size:70px;
+
+    color:#c8c8c8;
+
+}
+
+.explorer-placeholder h3{
+
+    margin-top:25px;
+
+    font-size:28px;
+
+}
+
+.explorer-placeholder p{
+
+    color:#777;
+
+    max-width:500px;
+
+    margin:15px auto;
+
+}
+
+
+/* ============================================================
+   Properties Table
+============================================================ */
+
+.properties-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:20px;
+
+}
+
+.properties-table th{
+
+    width:180px;
+
+    background:#f8f9fa;
+
+    color:#243343;
+
+    padding:12px;
+
+    border:1px solid #ececec;
+
+}
+
+.properties-table td{
+
+    padding:12px;
+
+    border:1px solid #ececec;
+
+}
+
+
+/* ============================================================
+   Columns Table
+============================================================ */
+
+.columns-table{
+
+    width:100%;
+
+    margin-top:30px;
+
+    border-collapse:collapse;
+
+}
+
+.columns-table th{
+
+    background:#243343;
+
+    color:white;
+
+    padding:12px;
+
+}
+
+.columns-table td{
+
+    padding:12px;
+
+    border-bottom:1px solid #ececec;
+
+}
+
+.columns-table tbody tr:hover{
+
+    background:#eef5ff;
+
+}
+
+
+/* ============================================================
+   Toolbar
+============================================================ */
+
+.explorer-toolbar{
+
+    display:flex;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+}
+
+.explorer-toolbar .btn{
+
+    min-width:120px;
+
+}
+
+
+/* ============================================================
+   Badge
+============================================================ */
+
+.badge{
+
+    font-size:12px;
+
+}
+
+
+/* ============================================================
+   Responsive
+============================================================ */
+
+@media(max-width:992px){
+
+    .explorer-sidebar{
+
+        min-height:auto;
+
+        margin-bottom:20px;
+
+    }
+
+    .explorer-details{
+
+        min-height:auto;
+
+    }
+
+    .explorer-details .card-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:15px;
+
+    }
+
+    .explorer-toolbar{
+
+        width:100%;
+
+    }
+
+}
+
+
+
+/* ==========================================
+   Selected Explorer Object
+========================================== */
+
+.explorer-item.active{
+
+    background:#0d6efd;
+
+    color:white;
+
+}
+
+.explorer-item.active small{
+
+    color:#e9ecef;
+
+}
+
+
+
+
+
+
+/* ==========================================
+   DDL Panel
+========================================== */
+
+.ddl-code{
+
+    background:#1e1e1e;
+
+    color:#dcdcdc;
+
+    padding:20px;
+
+    border-radius:10px;
+
+    font-size:13px;
+
+    line-height:1.6;
+
+    overflow:auto;
+
+    max-height:500px;
+
+    white-space:pre-wrap;
+
+    font-family:
+        Consolas,
+        Monaco,
+        monospace;
+
+}
+
+#ddlPanel,
+#relationshipPanel {
+
+    border:1px solid #d8dee8;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.06);
+
+    width: 100%;
+
+    margin-top: 20px;
+
+}
+
+#ddlPanel .card-header,
+#relationshipPanel .card-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-weight: 600;
+
+    justify-content: flex-start;
+
+}
+
+#relationshipPanel table {
+
+    margin-bottom: 0;
+
+}
+
+#relationshipPanel th {
+
+    width: 35%;
+
+}

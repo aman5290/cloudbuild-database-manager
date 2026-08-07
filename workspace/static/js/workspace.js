@@ -4,6 +4,8 @@ window.addEventListener("DOMContentLoaded", function () {
 
     const textarea = document.getElementById("sql-editor");
 
+    const pageQuery = textarea.value.trim();
+
     const savedQuery = localStorage.getItem(
 
         "cloudbuild-last-query"
@@ -11,6 +13,8 @@ window.addEventListener("DOMContentLoaded", function () {
     );
 
     if (
+
+        pageQuery === "" &&
 
         savedQuery !== null &&
 
@@ -43,6 +47,30 @@ window.addEventListener("DOMContentLoaded", function () {
             theme: "default"
 
         }
+
+    );
+    
+    
+    
+    
+    const workspaceQuery = sessionStorage.getItem("workspaceQuery");
+
+    if (workspaceQuery) {
+
+        editor.setValue(workspaceQuery);
+
+        sessionStorage.removeItem("workspaceQuery");
+
+    }
+    
+    
+    
+    
+    localStorage.setItem(
+
+        "cloudbuild-last-query",
+
+        editor.getValue()
 
     );
     
@@ -188,6 +216,48 @@ window.addEventListener("DOMContentLoaded", function () {
         }
 
     );
+    
+
+const ddlButton = document.getElementById("viewDDLBtn");
+console.log("DDL Button:", ddlButton);
+
+if (ddlButton) {
+
+    ddlButton.addEventListener("click", async function(){
+
+        if(!selectedObject){
+
+            alert("Select a table first.");
+
+            return;
+
+        }
+
+        const response = await fetch(
+
+            `/object-ddl?type=${selectedObject.type}&name=${selectedObject.name}`
+
+        );
+
+        const data = await response.json();
+
+        document.getElementById(
+
+            "ddlCode"
+
+        ).textContent = data.ddl;
+
+        new bootstrap.Modal(
+
+            document.getElementById("ddlModal")
+
+        ).show();
+
+    });
+
+}
+
+    
 
 });
 
@@ -521,6 +591,14 @@ function loadRecentQuery(query) {
     editor.focus();
 
 }
+
+
+
+
+
+
+
+
 
 
 

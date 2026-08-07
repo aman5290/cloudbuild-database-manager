@@ -40,7 +40,7 @@ from flask import (
 # Project Imports
 # ============================================================
 
-from src.database.db import (
+from src.database.saved_queries_db import (
     save_query,
     get_saved_queries,
     get_saved_query_by_id,

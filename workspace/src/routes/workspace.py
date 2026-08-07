@@ -11,12 +11,14 @@ from flask import (
 
 
 
-from src.database.db import (
+from src.database.workspace_db import (
     execute_select_query,
+)
+
+from src.database.history_db import (
     save_query_history,
     get_query_history,
 )
-
 
 
 from src.utils.auth import (

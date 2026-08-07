@@ -32,10 +32,12 @@ from .connection import *
 
 from .auth_db import *
 
-from .explorer_db import *
+from .database_explorer_db import *
 
 from .workspace_db import *
 
 from .history_db import *
 
 from .saved_queries_db import *
+
+from .database_explorer_db import *

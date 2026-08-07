@@ -1,49 +1,505 @@
 {% extends "base.html" %}
 
-{% block title %}
-Database Explorer
+{% block head %}
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/database_explorer.css') }}">
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 {% endblock %}
+
+{% block title %}Database Explorer{% endblock %}
 
 {% block content %}
 
-<h2>Database Explorer</h2>
+<div class="container-fluid explorer-page">
 
-{% include "components/search_bar.html" %}
+    <!-- =========================
+         Header
+    ========================== -->
 
-<p>
-Select a table to view its contents.
-</p>
+    <div class="explorer-header mb-4">
 
-<hr>
+        <div>
 
-<!-- ==========================================================
-     Database Table List
-     ----------------------------------------------------------
-     Purpose:
-     Display every PostgreSQL table as a clickable card.
+            <h2>
+                <i class="bi bi-database"></i>
+                Database Explorer
+            </h2>
 
-     Future Scope:
-     - Table icon
-     - Row count
-     - Search
-     - Favorite tables
-=========================================================== -->
+            <p>
+                Browse PostgreSQL database objects.
+            </p>
 
-<div class="table-grid">
+        </div>
 
-{% for table in tables %}
+        <div>
 
-    <a
-        class="table-card"
-        href="/table/{{ table }}">
+            <button
+                id="refreshExplorer"
+                class="btn btn-outline-primary">
 
-        📄 {{ table }}
+                <i class="bi bi-arrow-clockwise"></i>
 
-    </a>
+                Refresh
 
-{% endfor %}
+            </button>
+
+        </div>
+        <br>
+
+    </div>
+
+    <!-- =========================
+         Search
+    ========================== -->
+
+    <div class="explorer-search mb-4">
+
+        <div class="input-group">
+
+            <span class="input-group-text">
+
+                <i class="bi bi-search"></i>
+
+            </span>
+
+            <input
+                type="text"
+                id="objectSearch"
+                class="form-control"
+                placeholder="Search database objects...">
+
+        </div>
+        <br>
+        <hr>
+
+    </div>
+
+    <!-- =========================
+         Main Layout
+    ========================== -->
+
+    <div class="row g-4">
+
+        <!-- =========================
+             Explorer
+        ========================== -->
+
+        <div class="col-lg-4">
+
+            <div class="card explorer-sidebar">
+
+                <div class="card-header">
+
+                    DATABASE OBJECTS
+
+                </div>
+
+                <div class="card-body p-0">
+
+                   <div class="explorer-tree">
+
+                        <div class="tree-group">
+
+                            <div class="tree-header">
+
+                                <i class="bi bi-chevron-down tree-arrow"></i>
+
+                                <i class="bi bi-table"></i>
+
+                                Tables
+
+                                <span>{{ database_objects.tables|length }}</span>
+
+                            </div>
+
+                            <div class="tree-items">
+
+                                {% for table in database_objects.tables %}
+
+                                <div
+
+                                    class="tree-item explorer-object"
+
+                                    data-object-type="table"
+
+                                    data-object-name="{{ table }}">
+
+                                    <i class="bi bi-table"></i>
+
+                                    <span>{{ table }}</span>
+
+                                    <small>
+
+                                        {{ table_statistics.get(table,0) }}
+
+                                    </small>
+
+                                </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                    </div> 
+
+                </div>
+
+            </div>
+
+        </div>
+        
+        
+        
+        
+        
+        
+        
+                            
+        
+        
+        
+        
+        
+        
+
+        <!-- =========================
+             Object Details
+        ========================== -->
+
+        <div class="col-lg-8">
+
+            <div class="card explorer-details">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <h5 class="mb-0">
+
+                        <i class="bi bi-info-circle"></i>
+
+                        Object Details
+
+                    </h5>
+
+                    <div class="explorer-toolbar">
+
+                        <button
+                            id="browseDataBtn"
+                            class="btn btn-primary btn-sm">
+
+                            <i class="bi bi-table"></i>
+
+                            Browse Data
+
+                        </button>
+
+                        <button
+                            id="viewDDLBtn"
+                            class="btn btn-outline-secondary btn-sm">
+
+                            <i class="bi bi-file-earmark-code"></i>
+
+                            View DDL
+
+                        </button>
+
+                        <button
+                            id="relationshipsBtn"
+                            class="btn btn-outline-secondary btn-sm">
+
+                            <i class="bi bi-diagram-3"></i>
+
+                            Relationships
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div
+                    class="card-body"
+                    id="detailsPanel">
+
+                    <div class="explorer-placeholder">
+
+                        <i class="bi bi-database"></i>
+
+                        <h3>
+
+                            Select a Database Object
+
+                        </h3>
+
+                        <p>
+
+                            Choose any table, view, function or sequence
+                            from the left panel.
+
+                        </p>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <h5>
+
+                                Properties
+
+                            </h5>
+
+                            <table class="table properties-table">
+
+                                <tbody>
+
+                                    <tr>
+
+                                        <th>Schema</th>
+
+                                        <td>—</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <th>Owner</th>
+
+                                        <td>—</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <th>Rows</th>
+
+                                        <td>—</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <th>Size</th>
+
+                                        <td>—</td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <h5>
+
+                                Statistics
+
+                            </h5>
+
+                            <table class="table properties-table">
+
+                                <tbody>
+
+                                    <tr>
+
+                                        <th>Columns</th>
+
+                                        <td>—</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <th>Indexes</th>
+
+                                        <td>—</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <th>Constraints</th>
+
+                                        <td>—</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <th>Last Updated</th>
+
+                                        <td>—</td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+                            
+                            
+                            
+                            <hr class="mt-4">
+
+                            
+
+
+
+
+
+                        </div>
+
+                    </div>
+
+                    <h5 class="mt-4">
+
+                        Columns
+
+                    </h5>
+
+                    <table class="table columns-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Name</th>
+
+                                <th>Data Type</th>
+
+                                <th>Nullable</th>
+
+                                <th>Primary Key</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+
+                                <td
+                                    colspan="4"
+                                    class="text-center text-muted">
+
+                                    Select an object to display metadata.
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                    
+
+                </div>
+
+
+                    <!-- =========================
+                        Table DDL
+                    ========================== -->
+
+                    <div
+                        id="ddlPanel"
+                        class="card mt-4"
+                        style="display:none;">
+
+                        <div class="card-header d-flex align-items-center">
+
+                            <i class="bi bi-file-earmark-code me-2"></i>
+
+                            <span>Table DDL</span>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <pre
+                                id="ddlCode"
+                                class="ddl-code"></pre>
+
+                        </div>
+
+                    </div>
+
+                    <!-- =========================
+                        Relationships
+                    ========================== -->
+
+                    <div
+                        id="relationshipPanel"
+                        class="card mt-4"
+                        style="display:none;">
+
+                        <div class="card-header">
+
+                            <i class="bi bi-diagram-3 me-2"></i>
+
+                            <span>Relationships</span>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <table class="table table-hover">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>Column</th>
+
+                                        <th>References</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="relationshipBody">
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+            </div>
+
+        </div>
+                    
+    </div>
 
 </div>
 
 
+
+
+                   
+                    
+                    
+                    
+                    
+                    
+
+<script src="{{ url_for('static', filename='js/database_explorer.js') }}"></script>
+
 {% endblock %}
+
+
+
+
+                    

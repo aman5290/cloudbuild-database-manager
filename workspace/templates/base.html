@@ -57,6 +57,7 @@ Last Updated
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}">
+        
 
 
 
@@ -72,9 +73,11 @@ Last Updated
 href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css">
 
 
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+{% block head %}{% endblock %}
 
 </head>
-
 
 
 {% block scripts %}
@@ -259,6 +262,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.cs
 <link
 rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
 </body>
 

@@ -16,13 +16,16 @@ from flask import (
     Blueprint,
     render_template,
     request,
+    jsonify,
 )
 
 from src.database.db import (
-    get_database_tables,
+    get_database_objects,
+    get_table_statistics,
     get_table_data,
     get_table_information,
     get_table_columns,
+    get_database_summary,
 )
 
 from src.utils.auth import (
@@ -32,6 +35,17 @@ from src.utils.auth import (
 from src.utils.search import (
     filter_items,
 )
+
+
+
+from src.database.database_explorer_db import (
+    get_object_details,
+    get_object_ddl,
+    get_relationships,
+)
+
+
+
 
 # ============================================================
 # Blueprint
@@ -57,19 +71,44 @@ def database_explorer():
         ""
     ).strip()
 
-    tables = get_database_tables()
+    
+    
+    database_objects = get_database_objects()
 
-    tables = filter_items(
-        tables,
+    database_summary = get_database_summary()
+
+    table_statistics = get_table_statistics()
+
+    database_objects["tables"] = filter_items(
+        database_objects["tables"],
         search,
     )
 
+    database_objects["views"] = filter_items(
+        database_objects["views"],
+        search,
+    )
+
+    database_objects["functions"] = filter_items(
+        database_objects["functions"],
+        search,
+    )
+
+    database_objects["sequences"] = filter_items(
+        database_objects["sequences"],
+        search,
+    )
+
+
+
     return render_template(
         "database-explorer.html",
-        tables=tables,
+        database_objects=database_objects,
+        database_summary=database_summary,
+        table_statistics=table_statistics,
         search=search,
-        search_title="Search Tables",
-        search_placeholder="Search table name...",
+        search_title="Search Database Objects",
+        search_placeholder="Search database objects..."
     )
 
 
@@ -112,4 +151,65 @@ def table_view(table_name):
         column_info=column_info,
         columns=columns,
         rows=rows,
+    )
+
+
+
+
+# -----------------------------------------------------------
+# Load Metadata (AJAX)
+# -----------------------------------------------------------
+
+@database_bp.route("/object-details", methods=["GET"])
+@login_required
+def object_details():
+
+    object_type = request.args.get("type")
+    object_name = request.args.get("name")
+
+    data = get_object_details(
+        object_type,
+        object_name
+    )
+
+    return jsonify(data)
+
+
+
+
+
+
+@database_bp.route("/object-ddl")
+@login_required
+def object_ddl():
+
+    object_type = request.args.get("type")
+    object_name = request.args.get("name")
+
+    ddl = get_object_ddl(
+        object_type,
+        object_name
+    )
+
+    return jsonify({
+
+        "ddl": ddl
+
+    })
+
+
+
+
+
+
+@database_bp.route("/object-relationships")
+@login_required
+def object_relationships():
+
+    table = request.args.get("name")
+
+    return jsonify(
+
+        get_relationships(table)
+
     )

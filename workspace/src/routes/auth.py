@@ -31,13 +31,14 @@ from flask import (
     url_for,
 )
 
-from src.database.db import (
+from src.database.auth_db import (
     get_user_by_username,
 )
 
 from src.utils.auth import (
     verify_password,
 )
+
 
 # ============================================================
 # Blueprint
